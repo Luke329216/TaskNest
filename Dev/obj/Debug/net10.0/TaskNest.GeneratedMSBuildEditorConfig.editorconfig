@@ -21,14 +21,14 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property.EntryPointFilePath = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = TaskNest
-build_property.ProjectDir = C:\Work\Apps\TaskNest\Dev\
+build_property.ProjectDir = C:\Work\Repository\TaskNest\Dev\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Work/Apps/TaskNest/Dev/TaskNestUI/App.axaml]
+[C:/Work/Repository/TaskNest/Dev/TaskNestUI/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Work/Apps/TaskNest/Dev/TaskNestUI/MainWindow.axaml]
+[C:/Work/Repository/TaskNest/Dev/TaskNestUI/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

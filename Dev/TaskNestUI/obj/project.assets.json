@@ -1608,11 +1608,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Work\\Apps\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
+      "projectUniqueName": "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
       "projectName": "TaskNestUI",
-      "projectPath": "C:\\Work\\Apps\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
+      "projectPath": "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
       "packagesPath": "C:\\Users\\lucas\\.nuget\\packages\\",
-      "outputPath": "C:\\Work\\Apps\\TaskNest\\Dev\\TaskNestUI\\obj\\",
+      "outputPath": "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"

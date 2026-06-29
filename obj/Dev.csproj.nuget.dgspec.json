@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj": {}
+    "C:\\Work\\Repository\\TaskNest\\Dev.csproj": {}
   },
   "projects": {
-    "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj": {
+    "C:\\Work\\Repository\\TaskNest\\Dev.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
-        "projectName": "TaskNestUI",
-        "projectPath": "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
+        "projectUniqueName": "C:\\Work\\Repository\\TaskNest\\Dev.csproj",
+        "projectName": "Dev",
+        "projectPath": "C:\\Work\\Repository\\TaskNest\\Dev.csproj",
         "packagesPath": "C:\\Users\\lucas\\.nuget\\packages\\",
-        "outputPath": "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\obj\\",
+        "outputPath": "C:\\Work\\Repository\\TaskNest\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -45,28 +45,6 @@
         "net10.0": {
           "framework": "net10.0",
           "targetAlias": "net10.0",
-          "dependencies": {
-            "Avalonia": {
-              "target": "Package",
-              "version": "[12.0.5, )"
-            },
-            "Avalonia.Desktop": {
-              "target": "Package",
-              "version": "[12.0.5, )"
-            },
-            "Avalonia.Fonts.Inter": {
-              "target": "Package",
-              "version": "[12.0.5, )"
-            },
-            "Avalonia.Themes.Fluent": {
-              "target": "Package",
-              "version": "[12.0.5, )"
-            },
-            "AvaloniaUI.DiagnosticsSupport": {
-              "target": "Package",
-              "version": "[2.2.3, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",

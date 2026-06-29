@@ -5,59 +5,55 @@
         Height="600"
         Title="TaskNest">
 
-    <StackPanel Margin="20" Spacing="10">
+    <!-- ✅ THIS IS THE FIX -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Auto">
 
-        <!-- App Title -->
-        <TextBlock FontSize="28"
-                   FontWeight="Bold"
-                   Text="TaskNest"/>
+        <StackPanel Margin="20" Spacing="10">
 
-        <!-- Top Bar -->
-        <Grid ColumnDefinitions="*,Auto,Auto"
-              ColumnSpacing="10">
+            <TextBlock FontSize="28"
+                       FontWeight="Bold"
+                       Text="TaskNest"/>
 
-            <TextBox Grid.Column="0"
-                     Name="TaskInput"
-                     PlaceholderText="Add task to General..."
-                     KeyDown="TaskInput_KeyDown"/>
+            <!-- Top Bar -->
+            <Grid ColumnDefinitions="*,Auto,Auto"
+                  ColumnSpacing="10">
 
-            <Button Grid.Column="1"
-                    Content="Add"
-                    Click="AddTaskToGeneral_Click"/>
+                <TextBox Grid.Column="0"
+                         Name="TaskInput"
+                         PlaceholderText="Add task to General..."
+                         KeyDown="TaskInput_KeyDown"/>
 
-            <Button Grid.Column="2"
-                    Content="Undo"
-                    Click="Undo_Click"/>
+                <Button Grid.Column="1"
+                        Content="Add"
+                        Click="AddTaskToGeneral_Click"/>
 
-        </Grid>
+                <Button Grid.Column="2"
+                        Content="Undo"
+                        Click="Undo_Click"/>
 
-        <TextBlock Text="Right-click anywhere to add categories or manage tasks"
-                   FontSize="12"
-                   Opacity="0.7"/>
+            </Grid>
 
-        <!-- ✅ THIS IS THE IMPORTANT FIX -->
-        <ScrollViewer VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Auto">
+            <TextBlock Text="Right-click to manage categories and tasks"
+                       FontSize="12"
+                       Opacity="0.7"/>
 
-            <Border Background="Transparent">
+            <!-- Category Area -->
+            <StackPanel Name="CategoryPanel"
+                        Spacing="10"
+                        Background="Transparent">
 
-                <StackPanel Name="CategoryPanel"
-                            Spacing="10"
-                            Background="Transparent">
+                <StackPanel.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Add Category"
+                                  Click="AddCategoryFromEmptySpace_Click"/>
+                    </ContextMenu>
+                </StackPanel.ContextMenu>
 
-                    <StackPanel.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Add Category"
-                                      Click="AddCategoryFromEmptySpace_Click"/>
-                        </ContextMenu>
-                    </StackPanel.ContextMenu>
+            </StackPanel>
 
-                </StackPanel>
+        </StackPanel>
 
-            </Border>
-
-        </ScrollViewer>
-
-    </StackPanel>
+    </ScrollViewer>
 
 </Window>

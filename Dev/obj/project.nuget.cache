@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "DkFF6u1nBm0=",
+  "dgSpecHash": "6urWLqH469A=",
   "success": true,
-  "projectFilePath": "C:\\Work\\Apps\\TaskNest\\Dev\\TaskNest.csproj",
+  "projectFilePath": "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNest.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lucas\\.nuget\\packages\\avalonia\\12.0.5\\avalonia.12.0.5.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\avalonia.angle.windows.natives\\2.1.27548.20260419\\avalonia.angle.windows.natives.2.1.27548.20260419.nupkg.sha512",

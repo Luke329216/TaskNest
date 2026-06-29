@@ -245,7 +245,7 @@ public partial class MainWindow : Window
 
         var input = new TextBox
         {
-            Watermark = watermark,
+            PlaceholderText = watermark,
             MinWidth = 220
         };
 
