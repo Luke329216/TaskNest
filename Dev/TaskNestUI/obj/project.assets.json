@@ -1603,19 +1603,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\lucas\\.nuget\\packages\\": {}
+    "C:\\Users\\GJLEO\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
+      "projectUniqueName": "C:\\Work\\Respitory\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
       "projectName": "TaskNestUI",
-      "projectPath": "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
-      "packagesPath": "C:\\Users\\lucas\\.nuget\\packages\\",
-      "outputPath": "C:\\Work\\Repository\\TaskNest\\Dev\\TaskNestUI\\obj\\",
+      "projectPath": "C:\\Work\\Respitory\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
+      "packagesPath": "C:\\Users\\GJLEO\\.nuget\\packages\\",
+      "outputPath": "C:\\Work\\Respitory\\TaskNest\\Dev\\TaskNestUI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\GJLEO\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"

@@ -1,0 +1,5 @@
+C:\Work\Respitory\TaskNest\obj\Debug\net10.0\Dev.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\Respitory\TaskNest\obj\Debug\net10.0\Dev.AssemblyInfoInputs.cache
+C:\Work\Respitory\TaskNest\obj\Debug\net10.0\Dev.AssemblyInfo.cs
+C:\Work\Respitory\TaskNest\obj\Debug\net10.0\Dev.csproj.CoreCompileInputs.cache
+C:\Work\Respitory\TaskNest\obj\Debug\net10.0\Dev.sourcelink.json
