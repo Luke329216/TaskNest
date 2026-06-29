@@ -46,7 +46,7 @@
                         <TextBox Grid.Column="0"
                                  Name="TaskInput"
                                  FontSize="16"
-                                 Watermark="Add a task..."
+                                 PlaceholderText="Add a task..."
                                  KeyDown="TaskInput_KeyDown"/>
 
                         <Button Grid.Column="1"
