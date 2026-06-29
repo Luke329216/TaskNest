@@ -8,19 +8,19 @@
     "net10.0": []
   },
   "packageFolders": {
-    "C:\\Users\\lucas\\.nuget\\packages\\": {}
+    "C:\\Users\\GJLEO\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Work\\Repository\\TaskNest\\Dev.csproj",
+      "projectUniqueName": "C:\\Work\\Respitory\\TaskNest\\Dev.csproj",
       "projectName": "Dev",
-      "projectPath": "C:\\Work\\Repository\\TaskNest\\Dev.csproj",
-      "packagesPath": "C:\\Users\\lucas\\.nuget\\packages\\",
-      "outputPath": "C:\\Work\\Repository\\TaskNest\\obj\\",
+      "projectPath": "C:\\Work\\Respitory\\TaskNest\\Dev.csproj",
+      "packagesPath": "C:\\Users\\GJLEO\\.nuget\\packages\\",
+      "outputPath": "C:\\Work\\Respitory\\TaskNest\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\GJLEO\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -344,5 +344,13 @@
         }
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file C:\\Work\\Respitory\\TaskNest\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0."
+    }
+  ]
 }
