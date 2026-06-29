@@ -1,18 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Y0R99TLw+p0=",
+  "dgSpecHash": "FghNNnJXxRQ=",
   "success": true,
-  "projectFilePath": "C:\\Work\\Respitory\\TaskNest\\Dev.csproj",
+  "projectFilePath": "C:\\Work\\Repository\\TaskNest\\Dev.csproj",
   "expectedPackageFiles": [],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "message": "Problem reading the cache file C:\\Work\\Respitory\\TaskNest\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
-      "projectPath": "C:\\Work\\Respitory\\TaskNest\\Dev.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Work\\Respitory\\TaskNest\\Dev.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }
