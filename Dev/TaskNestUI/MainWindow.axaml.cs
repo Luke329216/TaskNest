@@ -155,19 +155,36 @@ public partial class MainWindow : Window
 
                 var taskRow = new Grid
                 {
-                    ColumnDefinitions = new ColumnDefinitions("*,Auto"),
-                    Background = Brushes.Transparent,
+                    ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
                     HorizontalAlignment = HorizontalAlignment.Left,
-                    MinWidth = 300
+                    MinWidth = 350,
+                    ColumnSpacing = 10
+                };
+
+                var checkBox = new CheckBox
+                {
+                    IsChecked = currentTask.IsCompleted,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                checkBox.Click += (_, _) =>
+                {
+                    currentTask.IsCompleted = checkBox.IsChecked ?? false;
+
+                    BuildUI();
                 };
 
                 var taskText = new TextBlock
                 {
                     Text = currentTask.Text,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    TextWrapping = TextWrapping.NoWrap,
-                    Margin = new Thickness(0, 0, 10, 0)
+                    VerticalAlignment = VerticalAlignment.Center
                 };
+
+                if (currentTask.IsCompleted)
+                {
+                    taskText.TextDecorations = TextDecorations.Strikethrough;
+                    taskText.Opacity = 0.5;
+                }
 
                 var deleteButton = new Button
                 {
@@ -179,11 +196,13 @@ public partial class MainWindow : Window
                     DeleteTask(currentTask, currentCategory);
                 };
 
+                taskRow.Children.Add(checkBox);
                 taskRow.Children.Add(taskText);
                 taskRow.Children.Add(deleteButton);
 
-                Grid.SetColumn(taskText, 0);
-                Grid.SetColumn(deleteButton, 1);
+                Grid.SetColumn(checkBox, 0);
+                Grid.SetColumn(taskText, 1);
+                Grid.SetColumn(deleteButton, 2);
 
                 taskRow.ContextMenu = MakeTaskMenu(currentTask, currentCategory);
 
