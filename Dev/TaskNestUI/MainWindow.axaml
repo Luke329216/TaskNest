@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="TaskNestUI.MainWindow"
+        Width="800"
+        Height="600"
+        Title="TaskNest">
+
+    <StackPanel Margin="20" Spacing="10">
+
+        <!-- App Title -->
+        <TextBlock FontSize="28"
+                   FontWeight="Bold"
+                   Text="TaskNest"/>
+
+        <!-- Top Bar -->
+        <Grid ColumnDefinitions="*,Auto,Auto"
+              ColumnSpacing="10">
+
+            <TextBox Grid.Column="0"
+                     Name="TaskInput"
+                     PlaceholderText="Add task to General..."
+                     KeyDown="TaskInput_KeyDown"/>
+
+            <Button Grid.Column="1"
+                    Content="Add"
+                    Click="AddTaskToGeneral_Click"/>
+
+            <Button Grid.Column="2"
+                    Content="Undo"
+                    Click="Undo_Click"/>
+
+        </Grid>
+
+        <TextBlock Text="Right-click anywhere to add categories or manage tasks"
+                   FontSize="12"
+                   Opacity="0.7"/>
+
+        <!-- ✅ THIS IS THE IMPORTANT FIX -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Auto">
+
+            <Border Background="Transparent">
+
+                <StackPanel Name="CategoryPanel"
+                            Spacing="10"
+                            Background="Transparent">
+
+                    <StackPanel.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Add Category"
+                                      Click="AddCategoryFromEmptySpace_Click"/>
+                        </ContextMenu>
+                    </StackPanel.ContextMenu>
+
+                </StackPanel>
+
+            </Border>
+
+        </ScrollViewer>
+
+    </StackPanel>
+
+</Window>
