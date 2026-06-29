@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TaskNestUI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fea8e9af6c9a6f75a1f554e7f1f1d21e1230fdc9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ec8d52e94cc505bfb6817931716a3e1fda338e16")]
 [assembly: System.Reflection.AssemblyProductAttribute("TaskNestUI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TaskNestUI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
