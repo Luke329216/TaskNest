@@ -6,69 +6,116 @@
         Title="TaskNest"
         Background="#0F172A">
 
-    <Border>
-        <Border.Background>
-            <!-- Midnight Nebula Gradient -->
-            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#2D1B69" Offset="0.0"/>
-                <GradientStop Color="#0F1B45" Offset="0.5"/>
-                <GradientStop Color="#0A0F24" Offset="1.0"/>
-            </LinearGradientBrush>
-        </Border.Background>
+    <TabControl TabStripPlacement="Bottom">
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <!-- ✅ TASKS TAB -->
+        <TabItem Header="Tasks">
 
-            <StackPanel Margin="30" Spacing="20">
+            <Border>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#2D1B69" Offset="0.0"/>
+                        <GradientStop Color="#0F1B45" Offset="0.5"/>
+                        <GradientStop Color="#0A0F24" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Border.Background>
 
-                <!-- Title -->
-                <TextBlock Text="TaskNest"
-                           FontSize="38"
-                           FontWeight="Bold"
-                           Foreground="White"
-                           HorizontalAlignment="Center"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-                <!-- Input -->
-                <Border Background="#1E293B80"
-                        CornerRadius="12"
-                        Padding="15">
+                    <StackPanel Margin="30" Spacing="20">
 
-                    <Grid ColumnDefinitions="*,Auto,Auto"
-                          ColumnSpacing="10">
+                        <!-- Title -->
+                        <TextBlock Text="TaskNest"
+                                   FontSize="38"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"/>
 
-                        <TextBox Name="TaskInput"
-                                 Foreground="White"
-                                 Background="#111827"
-                                 PlaceholderText="Add a task..."
-                                 KeyDown="TaskInput_KeyDown"/>
+                        <!-- Input -->
+                        <Border Background="#1E293B80"
+                                CornerRadius="12"
+                                Padding="15">
 
-                        <Button Grid.Column="1"
-                                Content="Add"
-                                Background="#2563EB"
-                                Foreground="White"/>
+                            <Grid ColumnDefinitions="*,Auto,Auto"
+                                  ColumnSpacing="10">
 
-                        <Button Grid.Column="2"
-                                Content="Undo"
-                                Background="#374151"
-                                Foreground="White"/>
-                    </Grid>
+                                <TextBox Name="TaskInput"
+                                         Foreground="White"
+                                         Background="#111827"
+                                         PlaceholderText="Add a task..."/>
 
-                </Border>
+                                <Button Grid.Column="1"
+                                        Content="Add"
+                                        Click="AddTaskToGeneral_Click"
+                                        Background="#2563EB"
+                                        Foreground="White"/>
 
-                <!-- Categories -->
-                <Border Background="#1E293B80"
-                        CornerRadius="15"
-                        Padding="20"
-                        Name="CategoryContainer">
+                                <Button Grid.Column="2"
+                                        Content="Undo"
+                                        Click="Undo_Click"
+                                        Background="#374151"
+                                        Foreground="White"/>
 
-                    <StackPanel Name="CategoryPanel"
-                                Spacing="15"/>
+                            </Grid>
 
-                </Border>
+                        </Border>
 
-            </StackPanel>
+                        <!-- Categories -->
+                        <Border Background="#1E293B80"
+                                CornerRadius="15"
+                                Padding="20"
+                                Name="CategoryContainer">
 
-        </ScrollViewer>
+                            <StackPanel Name="CategoryPanel"
+                                        Spacing="15"/>
 
-    </Border>
+                        </Border>
+
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Border>
+
+        </TabItem>
+
+        <!-- ✅ GUIDE TAB -->
+        <TabItem Header="Guide">
+
+            <ScrollViewer>
+                <StackPanel Margin="25" Spacing="15">
+
+                    <TextBlock Text="How to Use TaskNest"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="White"/>
+
+                    <TextBlock Text="• Add tasks using the box at the top (or press Enter)."
+                               Foreground="White"/>
+
+                    <TextBlock Text="• Right‑click empty space → Add Category."
+                               Foreground="White"/>
+
+                    <TextBlock Text="• Right‑click a category → Add Task."
+                               Foreground="White"/>
+
+                    <TextBlock Text="• Right‑click a task → Move, Priority, Due Date."
+                               Foreground="White"/>
+
+                    <TextBlock Text="• Check a task → moves it to Completed."
+                               Foreground="White"/>
+
+                    <TextBlock Text="• Overdue tasks will show ⚠️."
+                               Foreground="White"/>
+
+                    <TextBlock Text="• Use Undo to bring back deleted tasks."
+                               Foreground="White"/>
+
+                </StackPanel>
+            </ScrollViewer>
+
+        </TabItem>
+
+    </TabControl>
 
 </Window>
