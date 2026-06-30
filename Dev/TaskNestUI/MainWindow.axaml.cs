@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -169,7 +170,7 @@ public partial class MainWindow : Window
         return menu;
     }
 
-    // ⭐ TASK RIGHT‑CLICK MENU: MOVE TO + PRIORITY + DELETE
+    // ⭐ TASK RIGHT‑CLICK MENU: MOVE TO + PRIORITY + DUE DATE + DELETE
     private ContextMenu BuildTaskMenu(TodoTask task, TodoCategory category)
     {
         var menu = new ContextMenu();
@@ -227,15 +228,129 @@ public partial class MainWindow : Window
         priorityMenu.Items.Add(low);
         priorityMenu.Items.Add(none);
 
+        // ⭐ Due Date submenu
+        var dueMenu = new MenuItem { Header = "Set Due Date" };
+
+        var today = new MenuItem { Header = "Today" };
+        today.Click += (_, _) =>
+        {
+            task.DueDate = DateTime.Today;
+            BuildUI();
+        };
+
+        var tomorrow = new MenuItem { Header = "Tomorrow" };
+        tomorrow.Click += (_, _) =>
+        {
+            task.DueDate = DateTime.Today.AddDays(1);
+            BuildUI();
+        };
+
+        var nextWeek = new MenuItem { Header = "Next Week" };
+        nextWeek.Click += (_, _) =>
+        {
+            task.DueDate = DateTime.Today.AddDays(7);
+            BuildUI();
+        };
+
+        var pickDate = new MenuItem { Header = "Pick Date…" };
+        pickDate.Click += (_, _) => ShowDatePicker(task);
+
+        var enterDate = new MenuItem { Header = "Enter Date…" };
+        enterDate.Click += (_, _) => ShowManualDateEntry(task);
+
+        var clearDate = new MenuItem { Header = "Clear Due Date" };
+        clearDate.Click += (_, _) =>
+        {
+            task.DueDate = null;
+            BuildUI();
+        };
+
+        dueMenu.Items.Add(today);
+        dueMenu.Items.Add(tomorrow);
+        dueMenu.Items.Add(nextWeek);
+        dueMenu.Items.Add(pickDate);
+        dueMenu.Items.Add(enterDate);
+        dueMenu.Items.Add(clearDate);
+
         // Delete
         var delete = new MenuItem { Header = "Delete" };
         delete.Click += (_, _) => DeleteTask(task, category);
 
         menu.Items.Add(moveTo);
         menu.Items.Add(priorityMenu);
+        menu.Items.Add(dueMenu);
         menu.Items.Add(delete);
 
         return menu;
+    }
+
+    // ⭐ Calendar popup (fully fixed)
+    private async void ShowDatePicker(TodoTask task)
+    {
+        var dialog = new Window
+        {
+            Width = 300,
+            Height = 300,
+            Title = "Pick Due Date"
+        };
+
+        var datePicker = new CalendarDatePicker
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
+        datePicker.SelectedDateChanged += (_, e) =>
+        {
+            if (e.AddedItems != null && e.AddedItems.Count > 0)
+            {
+                if (e.AddedItems[0] is DateTime selected)
+                {
+                    task.DueDate = selected.Date;
+                    dialog.Close();
+                    BuildUI();
+                }
+            }
+        };
+
+        dialog.Content = datePicker;
+        await dialog.ShowDialog(this);
+    }
+
+    // ⭐ Manual date entry popup
+    private async void ShowManualDateEntry(TodoTask task)
+    {
+        var dialog = new Window
+        {
+            Width = 300,
+            Height = 150,
+            Title = "Enter Due Date"
+        };
+
+        var stack = new StackPanel
+        {
+            Margin = new Avalonia.Thickness(10),
+            Spacing = 10
+        };
+
+        var input = new TextBox { PlaceholderText = "YYYY-MM-DD" };
+
+        var ok = new Button { Content = "OK" };
+        ok.Click += (_, _) =>
+        {
+            if (DateTime.TryParse(input.Text, out var date))
+            {
+                task.DueDate = date.Date;
+            }
+            dialog.Close();
+            BuildUI();
+        };
+
+        stack.Children.Add(input);
+        stack.Children.Add(ok);
+
+        dialog.Content = stack;
+        await dialog.ShowDialog(this);
     }
 
     private Border CreateInlineInput(TodoCategory? category)
@@ -346,16 +461,63 @@ public partial class MainWindow : Window
                 break;
         }
 
-        var delete = new Button { Content = "X" };
-        delete.Click += (_, _) => DeleteTask(task, category);
+        // ⭐ Due date display
+        if (task.DueDate.HasValue)
+        {
+            var due = task.DueDate.Value;
+
+            string display = $"(Due: {due:MMM d})";
+
+            var dueText = new TextBlock
+            {
+                Text = display,
+                Foreground = Brushes.LightGray,
+                Margin = new Avalonia.Thickness(10, 0, 0, 0)
+            };
+
+            // ⭐ Overdue icon
+            if (due < DateTime.Today)
+            {
+                dueText.Text = "⚠️ OVERDUE";
+                dueText.Foreground = Brushes.Red;
+            }
+
+            var stack = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 10
+            };
+
+            stack.Children.Add(text);
+            stack.Children.Add(dueText);
+
+            row.Children.Add(check);
+            row.Children.Add(stack);
+
+            Grid.SetColumn(check, 0);
+            Grid.SetColumn(stack, 1);
+
+            var delete = new Button { Content = "X" };
+            delete.Click += (_, _) => DeleteTask(task, category);
+
+            row.Children.Add(delete);
+            Grid.SetColumn(delete, 2);
+
+            row.ContextMenu = BuildTaskMenu(task, category);
+
+            return row;
+        }
+
+        var deleteBtn = new Button { Content = "X" };
+        deleteBtn.Click += (_, _) => DeleteTask(task, category);
 
         row.Children.Add(check);
         row.Children.Add(text);
-        row.Children.Add(delete);
+        row.Children.Add(deleteBtn);
 
         Grid.SetColumn(check, 0);
         Grid.SetColumn(text, 1);
-        Grid.SetColumn(delete, 2);
+        Grid.SetColumn(deleteBtn, 2);
 
         row.ContextMenu = BuildTaskMenu(task, category);
 
