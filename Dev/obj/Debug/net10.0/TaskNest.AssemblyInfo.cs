@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TaskNest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5a942eb8a4af471afe48b6194ed957777ce21b93")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fa79cc0968caf310216268a4de22db6f934e9df2")]
 [assembly: System.Reflection.AssemblyProductAttribute("TaskNest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TaskNest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
