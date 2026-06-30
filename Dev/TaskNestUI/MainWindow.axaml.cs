@@ -255,9 +255,6 @@ public partial class MainWindow : Window
         var pickDate = new MenuItem { Header = "Pick Date…" };
         pickDate.Click += (_, _) => ShowDatePicker(task);
 
-        var enterDate = new MenuItem { Header = "Enter Date…" };
-        enterDate.Click += (_, _) => ShowManualDateEntry(task);
-
         var clearDate = new MenuItem { Header = "Clear Due Date" };
         clearDate.Click += (_, _) =>
         {
@@ -269,7 +266,6 @@ public partial class MainWindow : Window
         dueMenu.Items.Add(tomorrow);
         dueMenu.Items.Add(nextWeek);
         dueMenu.Items.Add(pickDate);
-        dueMenu.Items.Add(enterDate);
         dueMenu.Items.Add(clearDate);
 
         // Delete
@@ -314,42 +310,6 @@ public partial class MainWindow : Window
         };
 
         dialog.Content = datePicker;
-        await dialog.ShowDialog(this);
-    }
-
-    // ⭐ Manual date entry popup
-    private async void ShowManualDateEntry(TodoTask task)
-    {
-        var dialog = new Window
-        {
-            Width = 300,
-            Height = 150,
-            Title = "Enter Due Date"
-        };
-
-        var stack = new StackPanel
-        {
-            Margin = new Avalonia.Thickness(10),
-            Spacing = 10
-        };
-
-        var input = new TextBox { PlaceholderText = "YYYY-MM-DD" };
-
-        var ok = new Button { Content = "OK" };
-        ok.Click += (_, _) =>
-        {
-            if (DateTime.TryParse(input.Text, out var date))
-            {
-                task.DueDate = date.Date;
-            }
-            dialog.Close();
-            BuildUI();
-        };
-
-        stack.Children.Add(input);
-        stack.Children.Add(ok);
-
-        dialog.Content = stack;
         await dialog.ShowDialog(this);
     }
 
