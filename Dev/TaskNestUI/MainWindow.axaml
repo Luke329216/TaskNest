@@ -8,9 +8,11 @@
 
     <Border>
         <Border.Background>
+            <!-- Midnight Nebula Gradient -->
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#1F2937" Offset="0"/>
-                <GradientStop Color="#111827" Offset="1"/>
+                <GradientStop Color="#2D1B69" Offset="0.0"/>
+                <GradientStop Color="#0F1B45" Offset="0.5"/>
+                <GradientStop Color="#0A0F24" Offset="1.0"/>
             </LinearGradientBrush>
         </Border.Background>
 
@@ -26,7 +28,7 @@
                            HorizontalAlignment="Center"/>
 
                 <!-- Input -->
-                <Border Background="#1E293B"
+                <Border Background="#1E293B80"
                         CornerRadius="12"
                         Padding="15">
 
@@ -53,7 +55,7 @@
                 </Border>
 
                 <!-- Categories -->
-                <Border Background="#1E293B"
+                <Border Background="#1E293B80"
                         CornerRadius="15"
                         Padding="20"
                         Name="CategoryContainer">
