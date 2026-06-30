@@ -8,15 +8,14 @@
 
     <Border>
         <Border.Background>
-            <LinearGradientBrush StartPoint="0,0"
-                                 EndPoint="1,1">
-                <GradientStop Color="#0F172A"
-                              Offset="0"/>
-                <GradientStop Color="#1E3A8A"
-                              Offset="1"/>
-            </LinearGradientBrush>
-        </Border.Background>
-
+    <LinearGradientBrush StartPoint="0,0"
+                         EndPoint="1,1">
+        <GradientStop Color="#1F2937"
+                      Offset="0"/>
+        <GradientStop Color="#111827"
+                      Offset="1"/>
+    </LinearGradientBrush>
+</Border.Background>
         <ScrollViewer VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
 
