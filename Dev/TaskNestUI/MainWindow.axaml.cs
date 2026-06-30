@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -28,6 +29,7 @@ public partial class MainWindow : Window
         BuildUI();
     }
 
+    // ✅ RIGHT CLICK EMPTY AREA
     private void SetupRightClick()
     {
         var container = this.FindControl<Border>("CategoryContainer");
@@ -53,7 +55,6 @@ public partial class MainWindow : Window
     private void AddTaskToGeneral_Click(object? sender, RoutedEventArgs e)
     {
         var input = this.FindControl<TextBox>("TaskInput");
-
         if (string.IsNullOrWhiteSpace(input?.Text)) return;
 
         categories.First(c => c.Name == "General")
@@ -90,7 +91,7 @@ public partial class MainWindow : Window
         {
             var expander = new Expander
             {
-                Header = $"{category.Name} ({category.Tasks.Count})",
+                Header = category.Name,
                 IsExpanded = true
             };
 
@@ -98,6 +99,7 @@ public partial class MainWindow : Window
 
             var mainStack = new StackPanel { Spacing = 8 };
 
+            // ✅ COMPLETED AT TOP
             if (category.CompletedTasks.Count > 0)
             {
                 var completedExpander = new Expander
@@ -119,6 +121,7 @@ public partial class MainWindow : Window
 
             var taskStack = new StackPanel { Spacing = 5 };
 
+            // ✅ INLINE INPUT INSIDE CATEGORY
             if (inlineAction == "AddTask" && inlineCategory == category)
             {
                 taskStack.Children.Add(CreateInlineInput(category));
@@ -135,6 +138,7 @@ public partial class MainWindow : Window
             panel.Children.Add(expander);
         }
 
+        // ✅ INLINE CATEGORY INPUT AT BOTTOM
         if (inlineAction == "AddCategory")
         {
             panel.Children.Add(CreateInlineInput(null));
@@ -143,6 +147,7 @@ public partial class MainWindow : Window
         inputToFocus?.Focus();
     }
 
+    // ✅ CATEGORY MENU (FIXED)
     private ContextMenu BuildCategoryMenu(TodoCategory category)
     {
         var menu = new ContextMenu();
@@ -169,12 +174,11 @@ public partial class MainWindow : Window
         return menu;
     }
 
-    // ⭐ TASK RIGHT‑CLICK MENU: MOVE TO + PRIORITY + DELETE
+    // ✅ TASK MENU (MOVE TO BACK ✅)
     private ContextMenu BuildTaskMenu(TodoTask task, TodoCategory category)
     {
         var menu = new ContextMenu();
 
-        // Move To submenu
         var moveTo = new MenuItem { Header = "Move To" };
 
         foreach (var cat in categories)
@@ -191,60 +195,27 @@ public partial class MainWindow : Window
             moveTo.Items.Add(item);
         }
 
-        // Priority submenu
-        var priorityMenu = new MenuItem { Header = "Set Priority" };
-
-        var high = new MenuItem { Header = "High (Red)" };
-        high.Click += (_, _) =>
-        {
-            task.Priority = TaskPriority.High;
-            BuildUI();
-        };
-
-        var medium = new MenuItem { Header = "Medium (Yellow)" };
-        medium.Click += (_, _) =>
-        {
-            task.Priority = TaskPriority.Medium;
-            BuildUI();
-        };
-
-        var low = new MenuItem { Header = "Low (Green)" };
-        low.Click += (_, _) =>
-        {
-            task.Priority = TaskPriority.Low;
-            BuildUI();
-        };
-
-        var none = new MenuItem { Header = "None" };
-        none.Click += (_, _) =>
-        {
-            task.Priority = TaskPriority.None;
-            BuildUI();
-        };
-
-        priorityMenu.Items.Add(high);
-        priorityMenu.Items.Add(medium);
-        priorityMenu.Items.Add(low);
-        priorityMenu.Items.Add(none);
-
-        // Delete
         var delete = new MenuItem { Header = "Delete" };
-        delete.Click += (_, _) => DeleteTask(task, category);
+
+        delete.Click += (_, _) =>
+        {
+            DeleteTask(task, category);
+        };
 
         menu.Items.Add(moveTo);
-        menu.Items.Add(priorityMenu);
         menu.Items.Add(delete);
 
         return menu;
     }
 
+    // ✅ INLINE INPUT (THIS FIXES YOUR ISSUE)
     private Border CreateInlineInput(TodoCategory? category)
     {
         var border = new Border
         {
             Background = Brushes.LightGray,
-            CornerRadius = new Avalonia.CornerRadius(6),
-            Padding = new Avalonia.Thickness(8)
+            CornerRadius = new CornerRadius(6),
+            Padding = new Thickness(8)
         };
 
         var row = new StackPanel
@@ -265,6 +236,7 @@ public partial class MainWindow : Window
         var cancel = new Button { Content = "Cancel" };
 
         ok.Click += (_, _) => SubmitInput(input.Text, category);
+
         cancel.Click += (_, _) =>
         {
             inlineAction = "";
@@ -272,12 +244,11 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
+        // ✅ ENTER KEY FIX
         input.KeyDown += (_, e) =>
         {
             if (e.Key == Key.Enter)
-            {
                 SubmitInput(input.Text, category);
-            }
         };
 
         row.Children.Add(input);
@@ -324,29 +295,14 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
-        var text = new TextBlock { Text = task.Text };
-
-        // Priority colors
-        switch (task.Priority)
+        var text = new TextBlock
         {
-            case TaskPriority.High:
-                text.Foreground = Brushes.Red;
-                break;
-
-            case TaskPriority.Medium:
-                text.Foreground = new SolidColorBrush(Color.Parse("#FFFF00"));
-                break;
-
-            case TaskPriority.Low:
-                text.Foreground = Brushes.LightGreen;
-                break;
-
-            default:
-                text.Foreground = Brushes.White;
-                break;
-        }
+            Text = task.Text,
+            Foreground = Brushes.White
+        };
 
         var delete = new Button { Content = "X" };
+
         delete.Click += (_, _) => DeleteTask(task, category);
 
         row.Children.Add(check);
@@ -357,6 +313,7 @@ public partial class MainWindow : Window
         Grid.SetColumn(text, 1);
         Grid.SetColumn(delete, 2);
 
+        // ✅ RIGHT CLICK TASK MENU
         row.ContextMenu = BuildTaskMenu(task, category);
 
         return row;
@@ -382,11 +339,13 @@ public partial class MainWindow : Window
         var text = new TextBlock
         {
             Text = task.Text,
+            Foreground = Brushes.White,
             TextDecorations = TextDecorations.Strikethrough,
             Opacity = 0.5
         };
 
         var delete = new Button { Content = "X" };
+
         delete.Click += (_, _) =>
         {
             category.CompletedTasks.Remove(task);

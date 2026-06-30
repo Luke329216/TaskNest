@@ -18,12 +18,14 @@
 
             <StackPanel Margin="30" Spacing="20">
 
+                <!-- Title -->
                 <TextBlock Text="TaskNest"
                            FontSize="38"
                            FontWeight="Bold"
                            Foreground="White"
                            HorizontalAlignment="Center"/>
 
+                <!-- Input -->
                 <Border Background="#1E293B"
                         CornerRadius="12"
                         Padding="15">
@@ -32,21 +34,25 @@
                           ColumnSpacing="10">
 
                         <TextBox Name="TaskInput"
+                                 Foreground="White"
+                                 Background="#111827"
                                  PlaceholderText="Add a task..."
                                  KeyDown="TaskInput_KeyDown"/>
 
                         <Button Grid.Column="1"
                                 Content="Add"
-                                Click="AddTaskToGeneral_Click"/>
+                                Background="#2563EB"
+                                Foreground="White"/>
 
                         <Button Grid.Column="2"
                                 Content="Undo"
-                                Click="Undo_Click"/>
-
+                                Background="#374151"
+                                Foreground="White"/>
                     </Grid>
 
                 </Border>
 
+                <!-- Categories -->
                 <Border Background="#1E293B"
                         CornerRadius="15"
                         Padding="20"
