@@ -28,7 +28,6 @@ public partial class MainWindow : Window
         BuildUI();
     }
 
-    // ✅ EMPTY SPACE MENU
     private void SetupRightClick()
     {
         var container = this.FindControl<Border>("CategoryContainer");
@@ -99,7 +98,6 @@ public partial class MainWindow : Window
 
             var mainStack = new StackPanel { Spacing = 8 };
 
-            // ✅ COMPLETED AT TOP
             if (category.CompletedTasks.Count > 0)
             {
                 var completedExpander = new Expander
@@ -121,7 +119,6 @@ public partial class MainWindow : Window
 
             var taskStack = new StackPanel { Spacing = 5 };
 
-            // ✅ INLINE TASK INPUT INSIDE CATEGORY
             if (inlineAction == "AddTask" && inlineCategory == category)
             {
                 taskStack.Children.Add(CreateInlineInput(category));
@@ -138,7 +135,6 @@ public partial class MainWindow : Window
             panel.Children.Add(expander);
         }
 
-        // ✅ INLINE CATEGORY INPUT AT BOTTOM (NOT TOP)
         if (inlineAction == "AddCategory")
         {
             panel.Children.Add(CreateInlineInput(null));
@@ -147,7 +143,6 @@ public partial class MainWindow : Window
         inputToFocus?.Focus();
     }
 
-    // ✅ CATEGORY MENU
     private ContextMenu BuildCategoryMenu(TodoCategory category)
     {
         var menu = new ContextMenu();
@@ -174,11 +169,12 @@ public partial class MainWindow : Window
         return menu;
     }
 
-    // ✅ TASK MENU (MOVE BACK ✅)
+    // ⭐ TASK RIGHT‑CLICK MENU: MOVE TO + PRIORITY + DELETE
     private ContextMenu BuildTaskMenu(TodoTask task, TodoCategory category)
     {
         var menu = new ContextMenu();
 
+        // Move To submenu
         var moveTo = new MenuItem { Header = "Move To" };
 
         foreach (var cat in categories)
@@ -195,17 +191,53 @@ public partial class MainWindow : Window
             moveTo.Items.Add(item);
         }
 
-        var delete = new MenuItem { Header = "Delete" };
+        // Priority submenu
+        var priorityMenu = new MenuItem { Header = "Set Priority" };
 
+        var high = new MenuItem { Header = "High (Red)" };
+        high.Click += (_, _) =>
+        {
+            task.Priority = TaskPriority.High;
+            BuildUI();
+        };
+
+        var medium = new MenuItem { Header = "Medium (Yellow)" };
+        medium.Click += (_, _) =>
+        {
+            task.Priority = TaskPriority.Medium;
+            BuildUI();
+        };
+
+        var low = new MenuItem { Header = "Low (Green)" };
+        low.Click += (_, _) =>
+        {
+            task.Priority = TaskPriority.Low;
+            BuildUI();
+        };
+
+        var none = new MenuItem { Header = "None" };
+        none.Click += (_, _) =>
+        {
+            task.Priority = TaskPriority.None;
+            BuildUI();
+        };
+
+        priorityMenu.Items.Add(high);
+        priorityMenu.Items.Add(medium);
+        priorityMenu.Items.Add(low);
+        priorityMenu.Items.Add(none);
+
+        // Delete
+        var delete = new MenuItem { Header = "Delete" };
         delete.Click += (_, _) => DeleteTask(task, category);
 
         menu.Items.Add(moveTo);
+        menu.Items.Add(priorityMenu);
         menu.Items.Add(delete);
 
         return menu;
     }
 
-    // ✅ INLINE INPUT BOX (THIS FIXES YOUR MAIN ISSUE)
     private Border CreateInlineInput(TodoCategory? category)
     {
         var border = new Border
@@ -240,7 +272,6 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
-        // ✅ ENTER KEY FIX
         input.KeyDown += (_, e) =>
         {
             if (e.Key == Key.Enter)
@@ -295,6 +326,26 @@ public partial class MainWindow : Window
 
         var text = new TextBlock { Text = task.Text };
 
+        // Priority colors
+        switch (task.Priority)
+        {
+            case TaskPriority.High:
+                text.Foreground = Brushes.Red;
+                break;
+
+            case TaskPriority.Medium:
+                text.Foreground = new SolidColorBrush(Color.Parse("#FFFF00"));
+                break;
+
+            case TaskPriority.Low:
+                text.Foreground = Brushes.LightGreen;
+                break;
+
+            default:
+                text.Foreground = Brushes.White;
+                break;
+        }
+
         var delete = new Button { Content = "X" };
         delete.Click += (_, _) => DeleteTask(task, category);
 
@@ -306,7 +357,6 @@ public partial class MainWindow : Window
         Grid.SetColumn(text, 1);
         Grid.SetColumn(delete, 2);
 
-        // ✅ RIGHT CLICK TASK MENU RESTORED
         row.ContextMenu = BuildTaskMenu(task, category);
 
         return row;
