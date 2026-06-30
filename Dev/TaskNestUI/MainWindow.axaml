@@ -8,33 +8,22 @@
 
     <Border>
         <Border.Background>
-    <LinearGradientBrush StartPoint="0,0"
-                         EndPoint="1,1">
-        <GradientStop Color="#1F2937"
-                      Offset="0"/>
-        <GradientStop Color="#111827"
-                      Offset="1"/>
-    </LinearGradientBrush>
-</Border.Background>
-        <ScrollViewer VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled">
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#1F2937" Offset="0"/>
+                <GradientStop Color="#111827" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.Background>
 
-            <StackPanel Margin="30"
-                        Spacing="20">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-                <!-- Title -->
+            <StackPanel Margin="30" Spacing="20">
+
                 <TextBlock Text="TaskNest"
                            FontSize="38"
                            FontWeight="Bold"
                            Foreground="White"
                            HorizontalAlignment="Center"/>
 
-                <TextBlock Text="Organize your tasks beautifully"
-                           FontSize="16"
-                           Foreground="#CCCCCC"
-                           HorizontalAlignment="Center"/>
-
-                <!-- Input Box -->
                 <Border Background="#1E293B"
                         CornerRadius="12"
                         Padding="15">
@@ -42,59 +31,36 @@
                     <Grid ColumnDefinitions="*,Auto,Auto"
                           ColumnSpacing="10">
 
-                        <TextBox Grid.Column="0"
-                                 Name="TaskInput"
-                                 FontSize="16"
+                        <TextBox Name="TaskInput"
                                  PlaceholderText="Add a task..."
                                  KeyDown="TaskInput_KeyDown"/>
 
                         <Button Grid.Column="1"
                                 Content="Add"
-                                Click="AddTaskToGeneral_Click"
-                                MinWidth="80"/>
+                                Click="AddTaskToGeneral_Click"/>
 
                         <Button Grid.Column="2"
                                 Content="Undo"
-                                Click="Undo_Click"
-                                MinWidth="80"/>
+                                Click="Undo_Click"/>
+
                     </Grid>
 
                 </Border>
 
-                <TextBlock Text="Right-click categories and tasks for more options"
-                           FontSize="13"
-                           Foreground="#BBBBBB"
-                           HorizontalAlignment="Center"/>
-
-                <!-- Category Area -->
                 <Border Background="#1E293B"
-        CornerRadius="15"
-        Padding="20">
-
-    <Border.ContextMenu>
-        <ContextMenu>
-            <MenuItem Header="Add Category"
-                      Click="AddCategoryFromEmptySpace_Click"/>
-        </ContextMenu>
-    </Border.ContextMenu>
+                        CornerRadius="15"
+                        Padding="20"
+                        Name="CategoryContainer">
 
                     <StackPanel Name="CategoryPanel"
-                                Spacing="15">
-
-                        <StackPanel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Add Category"
-                                          Click="AddCategoryFromEmptySpace_Click"/>
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
-
-                    </StackPanel>
+                                Spacing="15"/>
 
                 </Border>
 
             </StackPanel>
 
         </ScrollViewer>
+
     </Border>
 
 </Window>

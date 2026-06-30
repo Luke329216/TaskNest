@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -13,7 +12,6 @@ namespace TaskNestUI;
 public partial class MainWindow : Window
 {
     private ObservableCollection<TodoCategory> categories = new();
-
     private Stack<(TodoTask Task, TodoCategory Category, int Index)> deletedTasks = new();
 
     private string inlineAction = "";
@@ -24,488 +22,347 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        categories.Add(new TodoCategory
-        {
-            Name = "General"
-        });
+        categories.Add(new TodoCategory { Name = "General" });
 
+        SetupRightClick();
         BuildUI();
+    }
+
+    // ✅ EMPTY SPACE MENU
+    private void SetupRightClick()
+    {
+        var container = this.FindControl<Border>("CategoryContainer");
+
+        if (container == null) return;
+
+        var menu = new ContextMenu();
+
+        var addCategory = new MenuItem { Header = "Add Category" };
+
+        addCategory.Click += (_, _) =>
+        {
+            inlineAction = "AddCategory";
+            inlineCategory = null;
+            BuildUI();
+        };
+
+        menu.Items.Add(addCategory);
+
+        container.ContextMenu = menu;
     }
 
     private void AddTaskToGeneral_Click(object? sender, RoutedEventArgs e)
     {
         var input = this.FindControl<TextBox>("TaskInput");
 
-        if (input == null)
-        {
-            return;
-        }
+        if (string.IsNullOrWhiteSpace(input?.Text)) return;
 
-        if (string.IsNullOrWhiteSpace(input.Text))
-        {
-            return;
-        }
-
-        var generalCategory = GetOrCreateCategory("General");
-
-        generalCategory.Tasks.Add(new TodoTask
-        {
-            Text = input.Text.Trim()
-        });
+        categories.First(c => c.Name == "General")
+                  .Tasks.Add(new TodoTask { Text = input.Text.Trim() });
 
         input.Text = "";
-
         BuildUI();
     }
 
     private void TaskInput_KeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Enter)
-        {
             AddTaskToGeneral_Click(sender, new RoutedEventArgs());
-        }
     }
 
     private void Undo_Click(object? sender, RoutedEventArgs e)
     {
-        if (deletedTasks.Count == 0)
-        {
-            return;
-        }
+        if (deletedTasks.Count == 0) return;
 
-        var deleted = deletedTasks.Pop();
-
-        if (deleted.Index >= 0 && deleted.Index <= deleted.Category.Tasks.Count)
-        {
-            deleted.Category.Tasks.Insert(deleted.Index, deleted.Task);
-        }
-        else
-        {
-            deleted.Category.Tasks.Add(deleted.Task);
-        }
+        var d = deletedTasks.Pop();
+        d.Category.Tasks.Insert(d.Index, d.Task);
 
         BuildUI();
     }
 
     private void BuildUI()
     {
-        inputToFocus = null;
-
         var panel = this.FindControl<StackPanel>("CategoryPanel");
-
-        if (panel == null)
-        {
-            return;
-        }
+        if (panel == null) return;
 
         panel.Children.Clear();
 
         foreach (var category in categories)
         {
-            var currentCategory = category;
-
             var expander = new Expander
             {
-                Header = $"{currentCategory.Name} ({currentCategory.Tasks.Count})",
-                IsExpanded = currentCategory.IsExpanded,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                MinWidth = 300
+                Header = $"{category.Name} ({category.Tasks.Count})",
+                IsExpanded = true
             };
 
-            expander.PropertyChanged += (_, args) =>
+            expander.ContextMenu = BuildCategoryMenu(category);
+
+            var mainStack = new StackPanel { Spacing = 8 };
+
+            // ✅ COMPLETED AT TOP
+            if (category.CompletedTasks.Count > 0)
             {
-                if (args.Property.Name == nameof(Expander.IsExpanded))
+                var completedExpander = new Expander
                 {
-                    currentCategory.IsExpanded = expander.IsExpanded;
-                }
-            };
-
-            expander.ContextMenu = MakeCategoryMenu(currentCategory);
-
-            var taskStack = new StackPanel
-            {
-                Margin = new Thickness(20, 5, 0, 5),
-                Spacing = 5,
-                HorizontalAlignment = HorizontalAlignment.Left
-            };
-
-            // If user clicked "Add Task", show textbox INSIDE this category
-            if (inlineAction == "AddTask" && inlineCategory == currentCategory)
-            {
-                var inputRow = MakeInlineInputRow(
-                    "New Task:",
-                    "Type task name...",
-                    name =>
-                    {
-                        currentCategory.Tasks.Add(new TodoTask
-                        {
-                            Text = name
-                        });
-
-                        ClearInlineBox();
-                        BuildUI();
-                    });
-
-                taskStack.Children.Add(inputRow);
-            }
-
-            foreach (var task in currentCategory.Tasks)
-            {
-                var currentTask = task;
-
-                var taskRow = new Grid
-                {
-                    ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    MinWidth = 350,
-                    ColumnSpacing = 10
+                    Header = $"Completed ({category.CompletedTasks.Count})",
+                    IsExpanded = true
                 };
 
-                var checkBox = new CheckBox
-                {
-                    IsChecked = currentTask.IsCompleted,
-                    VerticalAlignment = VerticalAlignment.Center
-                };
+                var completedStack = new StackPanel { Spacing = 5 };
 
-                checkBox.Click += (_, _) =>
+                foreach (var task in category.CompletedTasks.ToList())
                 {
-                    currentTask.IsCompleted = checkBox.IsChecked ?? false;
-
-                    BuildUI();
-                };
-
-                var taskText = new TextBlock
-                {
-                    Text = currentTask.Text,
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-
-                if (currentTask.IsCompleted)
-                {
-                    taskText.TextDecorations = TextDecorations.Strikethrough;
-                    taskText.Opacity = 0.5;
+                    completedStack.Children.Add(CreateCompletedRow(task, category));
                 }
 
-                var deleteButton = new Button
-                {
-                    Content = "X"
-                };
-
-                deleteButton.Click += (_, _) =>
-                {
-                    DeleteTask(currentTask, currentCategory);
-                };
-
-                taskRow.Children.Add(checkBox);
-                taskRow.Children.Add(taskText);
-                taskRow.Children.Add(deleteButton);
-
-                Grid.SetColumn(checkBox, 0);
-                Grid.SetColumn(taskText, 1);
-                Grid.SetColumn(deleteButton, 2);
-
-                taskRow.ContextMenu = MakeTaskMenu(currentTask, currentCategory);
-
-                taskStack.Children.Add(taskRow);
+                completedExpander.Content = completedStack;
+                mainStack.Children.Add(completedExpander);
             }
 
-            expander.Content = taskStack;
+            var taskStack = new StackPanel { Spacing = 5 };
+
+            // ✅ INLINE TASK INPUT INSIDE CATEGORY
+            if (inlineAction == "AddTask" && inlineCategory == category)
+            {
+                taskStack.Children.Add(CreateInlineInput(category));
+            }
+
+            foreach (var task in category.Tasks.ToList())
+            {
+                taskStack.Children.Add(CreateTaskRow(task, category));
+            }
+
+            mainStack.Children.Add(taskStack);
+            expander.Content = mainStack;
 
             panel.Children.Add(expander);
         }
 
-        // If user clicked "Add Category", show textbox in the category area
+        // ✅ INLINE CATEGORY INPUT AT BOTTOM (NOT TOP)
         if (inlineAction == "AddCategory")
         {
-            var inputRow = MakeInlineInputRow(
-                "New Category:",
-                "Type category name...",
-                name =>
-                {
-                    GetOrCreateCategory(name);
-
-                    ClearInlineBox();
-                    BuildUI();
-                });
-
-            panel.Children.Add(inputRow);
+            panel.Children.Add(CreateInlineInput(null));
         }
 
-        if (inputToFocus != null)
-        {
-            inputToFocus.Focus();
-        }
+        inputToFocus?.Focus();
     }
 
-    private Border MakeInlineInputRow(string labelText, string watermark, System.Action<string> confirmAction)
+    // ✅ CATEGORY MENU
+    private ContextMenu BuildCategoryMenu(TodoCategory category)
+    {
+        var menu = new ContextMenu();
+
+        var addTask = new MenuItem { Header = "Add Task" };
+        addTask.Click += (_, _) =>
+        {
+            inlineAction = "AddTask";
+            inlineCategory = category;
+            BuildUI();
+        };
+
+        var addCategory = new MenuItem { Header = "Add Category" };
+        addCategory.Click += (_, _) =>
+        {
+            inlineAction = "AddCategory";
+            inlineCategory = null;
+            BuildUI();
+        };
+
+        menu.Items.Add(addTask);
+        menu.Items.Add(addCategory);
+
+        return menu;
+    }
+
+    // ✅ TASK MENU (MOVE BACK ✅)
+    private ContextMenu BuildTaskMenu(TodoTask task, TodoCategory category)
+    {
+        var menu = new ContextMenu();
+
+        var moveTo = new MenuItem { Header = "Move To" };
+
+        foreach (var cat in categories)
+        {
+            var item = new MenuItem { Header = cat.Name };
+
+            item.Click += (_, _) =>
+            {
+                category.Tasks.Remove(task);
+                cat.Tasks.Add(task);
+                BuildUI();
+            };
+
+            moveTo.Items.Add(item);
+        }
+
+        var delete = new MenuItem { Header = "Delete" };
+
+        delete.Click += (_, _) => DeleteTask(task, category);
+
+        menu.Items.Add(moveTo);
+        menu.Items.Add(delete);
+
+        return menu;
+    }
+
+    // ✅ INLINE INPUT BOX (THIS FIXES YOUR MAIN ISSUE)
+    private Border CreateInlineInput(TodoCategory? category)
     {
         var border = new Border
         {
-            BorderBrush = Brushes.Gray,
-            BorderThickness = new Thickness(1),
-            CornerRadius = new CornerRadius(6),
-            Padding = new Thickness(8),
             Background = Brushes.LightGray,
-            HorizontalAlignment = HorizontalAlignment.Left,
-            MinWidth = 450
+            CornerRadius = new Avalonia.CornerRadius(6),
+            Padding = new Avalonia.Thickness(8)
         };
 
-        var grid = new Grid
+        var row = new StackPanel
         {
-            ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto,Auto"),
-            ColumnSpacing = 8
-        };
-
-        var label = new TextBlock
-        {
-            Text = labelText,
-            VerticalAlignment = VerticalAlignment.Center
+            Orientation = Orientation.Horizontal,
+            Spacing = 10
         };
 
         var input = new TextBox
         {
-            PlaceholderText = watermark,
-            MinWidth = 220
+            Width = 200,
+            PlaceholderText = "Type name..."
         };
 
-        var okButton = new Button
+        inputToFocus = input;
+
+        var ok = new Button { Content = "OK" };
+        var cancel = new Button { Content = "Cancel" };
+
+        ok.Click += (_, _) => SubmitInput(input.Text, category);
+        cancel.Click += (_, _) =>
         {
-            Content = "OK"
-        };
-
-        var cancelButton = new Button
-        {
-            Content = "Cancel"
-        };
-
-        okButton.Click += (_, _) =>
-        {
-            string name = input.Text?.Trim() ?? "";
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return;
-            }
-
-            confirmAction(name);
-        };
-
-        cancelButton.Click += (_, _) =>
-        {
-            ClearInlineBox();
+            inlineAction = "";
+            inlineCategory = null;
             BuildUI();
         };
 
+        // ✅ ENTER KEY FIX
         input.KeyDown += (_, e) =>
         {
             if (e.Key == Key.Enter)
             {
-                string name = input.Text?.Trim() ?? "";
-
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    return;
-                }
-
-                confirmAction(name);
-            }
-
-            if (e.Key == Key.Escape)
-            {
-                ClearInlineBox();
-                BuildUI();
+                SubmitInput(input.Text, category);
             }
         };
 
-        grid.Children.Add(label);
-        grid.Children.Add(input);
-        grid.Children.Add(okButton);
-        grid.Children.Add(cancelButton);
+        row.Children.Add(input);
+        row.Children.Add(ok);
+        row.Children.Add(cancel);
 
-        Grid.SetColumn(label, 0);
-        Grid.SetColumn(input, 1);
-        Grid.SetColumn(okButton, 2);
-        Grid.SetColumn(cancelButton, 3);
-
-        border.Child = grid;
-
-        inputToFocus = input;
-
+        border.Child = row;
         return border;
     }
 
-    private ContextMenu MakeCategoryMenu(TodoCategory category)
+    private void SubmitInput(string? text, TodoCategory? category)
     {
-        var menu = new ContextMenu();
+        if (string.IsNullOrWhiteSpace(text)) return;
 
-        var addTaskItem = new MenuItem
+        if (category == null)
         {
-            Header = "Add Task"
-        };
-
-        addTaskItem.Click += (_, _) =>
+            categories.Add(new TodoCategory { Name = text });
+        }
+        else
         {
-            ShowInlineAddTask(category);
-        };
-
-        var addCategoryItem = new MenuItem
-        {
-            Header = "Add Category"
-        };
-
-        addCategoryItem.Click += (_, _) =>
-        {
-            ShowInlineAddCategory();
-        };
-
-        menu.Items.Add(addTaskItem);
-        menu.Items.Add(addCategoryItem);
-
-        return menu;
-    }
-
-    private ContextMenu MakeTaskMenu(TodoTask task, TodoCategory currentCategory)
-    {
-        var menu = new ContextMenu();
-
-        var addTaskItem = new MenuItem
-        {
-            Header = "Add Task To This Category"
-        };
-
-        addTaskItem.Click += (_, _) =>
-        {
-            ShowInlineAddTask(currentCategory);
-        };
-
-        var addCategoryItem = new MenuItem
-        {
-            Header = "Add Category"
-        };
-
-        addCategoryItem.Click += (_, _) =>
-        {
-            ShowInlineAddCategory();
-        };
-
-        var moveToItem = new MenuItem
-        {
-            Header = "Move To"
-        };
-
-        foreach (var category in categories)
-        {
-            var targetCategory = category;
-
-            var categoryMoveItem = new MenuItem
-            {
-                Header = targetCategory.Name
-            };
-
-            categoryMoveItem.Click += (_, _) =>
-            {
-                MoveTask(task, currentCategory, targetCategory);
-            };
-
-            moveToItem.Items.Add(categoryMoveItem);
+            category.Tasks.Add(new TodoTask { Text = text });
         }
 
-        var deleteItem = new MenuItem
-        {
-            Header = "Delete"
-        };
-
-        deleteItem.Click += (_, _) =>
-        {
-            DeleteTask(task, currentCategory);
-        };
-
-        menu.Items.Add(addTaskItem);
-        menu.Items.Add(addCategoryItem);
-        menu.Items.Add(moveToItem);
-        menu.Items.Add(deleteItem);
-
-        return menu;
-    }
-
-    private void AddCategoryFromEmptySpace_Click(object? sender, RoutedEventArgs e)
-    {
-        ShowInlineAddCategory();
-    }
-
-    private void ShowInlineAddCategory()
-    {
-        inlineAction = "AddCategory";
-        inlineCategory = null;
-
-        BuildUI();
-    }
-
-    private void ShowInlineAddTask(TodoCategory category)
-    {
-        inlineAction = "AddTask";
-        inlineCategory = category;
-
-        category.IsExpanded = true;
-
-        BuildUI();
-    }
-
-    private void ClearInlineBox()
-    {
         inlineAction = "";
         inlineCategory = null;
-        inputToFocus = null;
+
+        BuildUI();
+    }
+
+    private Grid CreateTaskRow(TodoTask task, TodoCategory category)
+    {
+        var row = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
+            ColumnSpacing = 10
+        };
+
+        var check = new CheckBox();
+
+        check.Click += (_, _) =>
+        {
+            category.Tasks.Remove(task);
+            category.CompletedTasks.Add(task);
+            BuildUI();
+        };
+
+        var text = new TextBlock { Text = task.Text };
+
+        var delete = new Button { Content = "X" };
+        delete.Click += (_, _) => DeleteTask(task, category);
+
+        row.Children.Add(check);
+        row.Children.Add(text);
+        row.Children.Add(delete);
+
+        Grid.SetColumn(check, 0);
+        Grid.SetColumn(text, 1);
+        Grid.SetColumn(delete, 2);
+
+        // ✅ RIGHT CLICK TASK MENU RESTORED
+        row.ContextMenu = BuildTaskMenu(task, category);
+
+        return row;
+    }
+
+    private Grid CreateCompletedRow(TodoTask task, TodoCategory category)
+    {
+        var row = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
+            ColumnSpacing = 10
+        };
+
+        var check = new CheckBox { IsChecked = true };
+
+        check.Click += (_, _) =>
+        {
+            category.CompletedTasks.Remove(task);
+            category.Tasks.Add(task);
+            BuildUI();
+        };
+
+        var text = new TextBlock
+        {
+            Text = task.Text,
+            TextDecorations = TextDecorations.Strikethrough,
+            Opacity = 0.5
+        };
+
+        var delete = new Button { Content = "X" };
+        delete.Click += (_, _) =>
+        {
+            category.CompletedTasks.Remove(task);
+            BuildUI();
+        };
+
+        row.Children.Add(check);
+        row.Children.Add(text);
+        row.Children.Add(delete);
+
+        Grid.SetColumn(check, 0);
+        Grid.SetColumn(text, 1);
+        Grid.SetColumn(delete, 2);
+
+        return row;
     }
 
     private void DeleteTask(TodoTask task, TodoCategory category)
     {
         int index = category.Tasks.IndexOf(task);
 
-        if (index < 0)
-        {
-            return;
-        }
+        if (index < 0) return;
 
         deletedTasks.Push((task, category, index));
-
         category.Tasks.Remove(task);
 
         BuildUI();
-    }
-
-    private void MoveTask(TodoTask task, TodoCategory oldCategory, TodoCategory newCategory)
-    {
-        if (oldCategory == newCategory)
-        {
-            return;
-        }
-
-        oldCategory.Tasks.Remove(task);
-        newCategory.Tasks.Add(task);
-
-        BuildUI();
-    }
-
-    private TodoCategory GetOrCreateCategory(string name)
-    {
-        name = name.Trim();
-
-        var existing = categories.FirstOrDefault(c =>
-            c.Name.ToLower() == name.ToLower());
-
-        if (existing != null)
-        {
-            return existing;
-        }
-
-        var newCategory = new TodoCategory
-        {
-            Name = name
-        };
-
-        categories.Add(newCategory);
-
-        return newCategory;
     }
 }
