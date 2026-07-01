@@ -20,9 +20,14 @@ public class TodoTask
     public DateTime? DueDate { get; set; }
 
     // ⭐ Removed priority icons — now always blank
-    public string Icon => "";
+    public string Icon => Priority switch
+    {
+        TaskPriority.High => "🔥",
+        TaskPriority.Medium => "⚡",
+        TaskPriority.Low => "✅",
+        _ => "•"
+    };
 
-    // ⭐ Keep due-date icons (you didn’t ask to remove these)
     public string DueIcon
     {
         get
