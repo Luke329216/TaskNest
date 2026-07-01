@@ -102,9 +102,48 @@ public partial class MainWindow : Window
 
         foreach (var category in categories)
         {
+            int completedCount = category.CompletedTasks.Count;
+            int activeCount = category.Tasks.Count;
+            int totalCount = completedCount + activeCount;
+
+            double progressPercent = 0;
+
+            if (totalCount > 0)
+            {
+                progressPercent = (double)completedCount / totalCount;
+            }
+
+            var headerStack = new StackPanel
+            {
+                Spacing = 3
+            };
+
+            headerStack.Children.Add(new TextBlock
+            {
+                Text = $"{category.Name} ({activeCount})",
+                Foreground = Brushes.White,
+                FontWeight = FontWeight.Bold
+            });
+
+            headerStack.Children.Add(new ProgressBar
+            {
+                Minimum = 0,
+                Maximum = 100,
+                Value = progressPercent * 100,
+                Width = 250,
+                Height = 12
+            });
+
+            headerStack.Children.Add(new TextBlock
+            {
+                Text = $"{(int)(progressPercent * 100)}% Complete",
+                Foreground = Brushes.LightGray,
+                FontSize = 11
+            });
+
             var expander = new Expander
             {
-                Header = $"{category.Name} ({category.Tasks.Count})",
+                Header = headerStack,
                 IsExpanded = true
             };
 
@@ -157,7 +196,7 @@ public partial class MainWindow : Window
         inputToFocus?.Focus();
     }
 
-    private ContextMenu BuildCategoryMenu(TodoCategory category)
+        private ContextMenu BuildCategoryMenu(TodoCategory category)
     {
         var menu = new ContextMenu();
 
@@ -177,8 +216,41 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
+        var deleteCategory = new MenuItem
+        {
+            Header = "Delete Category"
+        };
+
+        deleteCategory.Click += (_, _) =>
+        {
+            // Don't allow deleting General
+            if (category.Name == "General")
+                return;
+
+            var general = categories.First(c => c.Name == "General");
+
+            foreach (var task in category.Tasks.ToList())
+            {
+                general.Tasks.Add(task);
+            }
+
+            foreach (var task in category.CompletedTasks.ToList())
+            {
+                general.CompletedTasks.Add(task);
+            }
+
+            categories.Remove(category);
+
+            BuildUI();
+        };
+
         menu.Items.Add(addTask);
         menu.Items.Add(addCategory);
+
+        if (category.Name != "General")
+        {
+            menu.Items.Add(deleteCategory);
+        }
 
         return menu;
     }
