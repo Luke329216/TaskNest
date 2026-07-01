@@ -23,6 +23,19 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        var taskInput = this.FindControl<TextBox>("TaskInput");
+
+        if (taskInput != null)
+        {
+            taskInput.KeyDown += (_, e) =>
+            {
+                if (e.Key == Key.Enter)
+                {
+                    AddTaskToGeneral_Click(null, new RoutedEventArgs());
+                }
+            };
+        }
+
         categories.Add(new TodoCategory { Name = "General" });
 
         SetupRightClick();
