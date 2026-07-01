@@ -1,4 +1,5 @@
 using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -507,15 +508,20 @@ public partial class MainWindow : Window
         BuildUI();
     }
 
-    private Grid CreateTaskRow(TodoTask task, TodoCategory category)
+    private Border CreateTaskRow(TodoTask task, TodoCategory category)
     {
         var row = new Grid
         {
             ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
-            ColumnSpacing = 10
+            ColumnSpacing = 12,
+            VerticalAlignment = VerticalAlignment.Center
         };
 
-        var check = new CheckBox();
+        var check = new CheckBox
+        {
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Avalonia.Thickness(0, 0, 0, 0)
+        };
 
         check.Click += (_, _) =>
         {
@@ -524,124 +530,112 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
-        // ⭐ TASK PRIORITY ICON
-        var iconText = new TextBlock
+        var titlePanel = new StackPanel
+        {
+            Spacing = 6
+        };
+
+        var topRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 10,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
+        topRow.Children.Add(new TextBlock
         {
             Text = task.Icon,
             FontSize = 18,
-            Margin = new Avalonia.Thickness(0, 0, 6, 0)
+            Width = 24,
+            VerticalAlignment = VerticalAlignment.Center
+        });
+
+        topRow.Children.Add(new TextBlock
+        {
+            Text = task.Text,
+            FontSize = 15,
+            Foreground = Brushes.White,
+            TextWrapping = TextWrapping.Wrap,
+            VerticalAlignment = VerticalAlignment.Center
+        });
+
+        titlePanel.Children.Add(topRow);
+
+        var metaRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 12,
+            VerticalAlignment = VerticalAlignment.Center
         };
 
-        var text = new TextBlock { Text = task.Text };
-
-        switch (task.Priority)
+        metaRow.Children.Add(new TextBlock
         {
-            case TaskPriority.High:
-                text.Foreground = Brushes.Red;
-                break;
-
-            case TaskPriority.Medium:
-                text.Foreground = new SolidColorBrush(Color.Parse("#FFFF00"));
-                break;
-
-            case TaskPriority.Low:
-                text.Foreground = Brushes.LightGreen;
-                break;
-
-            default:
-                text.Foreground = Brushes.White;
-                break;
-        }
+            Text = task.Priority == TaskPriority.None ? "Normal" : task.Priority.ToString(),
+            Foreground = Brushes.LightGray,
+            FontSize = 12
+        });
 
         if (task.DueDate.HasValue)
         {
             var due = task.DueDate.Value;
+            string display = due < DateTime.Today ? "⚠️ OVERDUE" : $"Due {due:MMM d}";
 
-            string display = $"(Due: {due:MMM d})";
-
-            var dueText = new TextBlock
+            metaRow.Children.Add(new TextBlock
             {
                 Text = display,
-                Foreground = Brushes.LightGray,
-                Margin = new Avalonia.Thickness(10, 0, 0, 0)
-            };
-
-            if (due < DateTime.Today)
-            {
-                dueText.Text = "⚠️ OVERDUE";
-                dueText.Foreground = Brushes.Red;
-            }
-
-            var dueIcon = new TextBlock
-            {
-                Text = task.DueIcon,
-                FontSize = 16,
-                Margin = new Avalonia.Thickness(6, 0, 0, 0),
-                Foreground = Brushes.LightGray
-            };
-
-            var stack = new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                Spacing = 10
-            };
-
-            stack.Children.Add(iconText);
-            stack.Children.Add(text);
-            stack.Children.Add(dueIcon);
-            stack.Children.Add(dueText);
-
-            row.Children.Add(check);
-            row.Children.Add(stack);
-
-            Grid.SetColumn(check, 0);
-            Grid.SetColumn(stack, 1);
-
-            var delete = new Button { Content = "X" };
-            delete.Click += (_, _) => DeleteTask(task, category);
-
-            row.Children.Add(delete);
-            Grid.SetColumn(delete, 2);
-
-            row.ContextMenu = BuildTaskMenu(task, category);
-
-            return row;
+                Foreground = due < DateTime.Today ? Brushes.Red : Brushes.LightGray,
+                FontSize = 12
+            });
         }
 
-        var stackNoDue = new StackPanel
+        titlePanel.Children.Add(metaRow);
+
+        var deleteBtn = new Button
         {
-            Orientation = Orientation.Horizontal,
-            Spacing = 10
+            Content = "✕",
+            Width = 34,
+            Height = 34,
+            Background = Brushes.Transparent,
+            BorderBrush = Brushes.Transparent,
+            Foreground = Brushes.LightGray
         };
-
-        stackNoDue.Children.Add(iconText);
-        stackNoDue.Children.Add(text);
-
-        var deleteBtn = new Button { Content = "X" };
         deleteBtn.Click += (_, _) => DeleteTask(task, category);
 
         row.Children.Add(check);
-        row.Children.Add(stackNoDue);
+        row.Children.Add(titlePanel);
         row.Children.Add(deleteBtn);
 
         Grid.SetColumn(check, 0);
-        Grid.SetColumn(stackNoDue, 1);
+        Grid.SetColumn(titlePanel, 1);
         Grid.SetColumn(deleteBtn, 2);
 
-        row.ContextMenu = BuildTaskMenu(task, category);
+        var wrapper = new Border
+        {
+            Background = new SolidColorBrush(Color.Parse("#0F172A")),
+            CornerRadius = new CornerRadius(14),
+            Padding = new Avalonia.Thickness(14),
+            Margin = new Avalonia.Thickness(0, 0, 0, 10),
+            Child = row,
+            ContextMenu = BuildTaskMenu(task, category)
+        };
 
-        return row;
+        return wrapper;
     }
 
-    private Grid CreateCompletedRow(TodoTask task, TodoCategory category)
+    private Border CreateCompletedRow(TodoTask task, TodoCategory category)
     {
         var row = new Grid
         {
             ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
-            ColumnSpacing = 10
+            ColumnSpacing = 12,
+            VerticalAlignment = VerticalAlignment.Center
         };
 
-        var check = new CheckBox { IsChecked = true };
+        var check = new CheckBox
+        {
+            IsChecked = true,
+            VerticalAlignment = VerticalAlignment.Center
+        };
 
         check.Click += (_, _) =>
         {
@@ -650,70 +644,48 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
-        var iconText = new TextBlock
-        {
-            Text = "✔️",
-            FontSize = 18,
-            Margin = new Avalonia.Thickness(0, 0, 6, 0)
-        };
-
         var text = new TextBlock
         {
             Text = task.Text,
             TextDecorations = TextDecorations.Strikethrough,
-            Opacity = 0.5
+            Opacity = 0.6,
+            Foreground = Brushes.LightGray,
+            TextWrapping = TextWrapping.Wrap
         };
 
-        var delete = new Button { Content = "X" };
+        var delete = new Button
+        {
+            Content = "✕",
+            Width = 34,
+            Height = 34,
+            Background = Brushes.Transparent,
+            BorderBrush = Brushes.Transparent,
+            Foreground = Brushes.LightGray
+        };
         delete.Click += (_, _) =>
         {
             category.CompletedTasks.Remove(task);
             BuildUI();
         };
 
-        var stack = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            Spacing = 10
-        };
-
-        stack.Children.Add(iconText);
-        stack.Children.Add(text);
-
         row.Children.Add(check);
-        row.Children.Add(stack);
+        row.Children.Add(text);
         row.Children.Add(delete);
 
         Grid.SetColumn(check, 0);
-        Grid.SetColumn(stack, 1);
+        Grid.SetColumn(text, 1);
         Grid.SetColumn(delete, 2);
 
-        return row;
-    }
+        var wrapper = new Border
+        {
+            Background = new SolidColorBrush(Color.Parse("#0F172A")),
+            CornerRadius = new CornerRadius(14),
+            Padding = new Avalonia.Thickness(14),
+            Margin = new Avalonia.Thickness(0, 0, 0, 10),
+            Child = row
+        };
 
-    private void ApplyMidnightTheme_Click(object? sender, RoutedEventArgs e)
-    {
-        Background = new SolidColorBrush(Color.Parse("#0B1120"));
-    }
-
-    private void ApplyOceanTheme_Click(object? sender, RoutedEventArgs e)
-    {
-        Background = new SolidColorBrush(Color.Parse("#0F172A"));
-    }
-
-    private void ApplyPurpleTheme_Click(object? sender, RoutedEventArgs e)
-    {
-        Background = new SolidColorBrush(Color.Parse("#2D1B69"));
-    }
-
-    private void ApplyEmeraldTheme_Click(object? sender, RoutedEventArgs e)
-    {
-        Background = new SolidColorBrush(Color.Parse("#064E3B"));
-    }
-
-    private void ApplyLightTheme_Click(object? sender, RoutedEventArgs e)
-    {
-        Background = Brushes.White;
+        return wrapper;
     }
 
     private void ThemePicker_SelectionChanged(object? sender, SelectionChangedEventArgs e)

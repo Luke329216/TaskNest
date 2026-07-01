@@ -1,300 +1,158 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="TaskNestUI.MainWindow"
-        Width="1200"
-        Height="800"
+        Width="1300"
+        Height="860"
         Title="TaskNest"
-        Background="#0B1120">
+        Background="{StaticResource WindowBackground}">
 
-    <TabControl TabStripPlacement="Bottom">
 
-        <!-- TASKS -->
+    <Grid RowDefinitions="Auto,*" Margin="20">
+        <StackPanel Orientation="Vertical" Spacing="8">
+            <TextBlock Text="TaskNest" FontSize="34" FontWeight="Bold" Foreground="White"/>
+            <TextBlock Text="A modern productivity workspace for tasks and categories." FontSize="15" Foreground="{StaticResource SubtleText}"/>
+        </StackPanel>
 
-        <TabItem Header="Tasks">
+        <TabControl Grid.Row="1" TabStripPlacement="Top" Margin="0,20,0,0">
+            <TabItem Header="Tasks">
+                <Grid ColumnDefinitions="2*,1*" Margin="0,8,0,0">
+                    <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,20,0">
+                        <StackPanel Spacing="24">
+                            <Border Classes="card">
+                                <StackPanel Spacing="18">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Spacing="8">
+                                            <TextBlock Text="TaskNest dashboard" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                                            <TextBlock Text="Everything you need to create tasks, organize categories, and move faster." Foreground="{StaticResource SubtleText}" FontSize="14"/>
+                                        </StackPanel>
+                                        <Border Background="{StaticResource AccentColor}" CornerRadius="12" Padding="10,6" Grid.Column="1" VerticalAlignment="Top">
+                                            <TextBlock Text="Professional" Foreground="White" FontWeight="SemiBold"/>
+                                        </Border>
+                                    </Grid>
 
-            <Grid>
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" VerticalAlignment="Center">
+                                        <TextBox Name="TaskInput" PlaceholderText="Add a new task…" />
+                                        <Button Grid.Column="1" Content="Add Task" Click="AddTaskToGeneral_Click" MinWidth="140"/>
+                                    </Grid>
 
-                <Border Background="#0B1120"/>
+                                    <Button Content="Undo Last Delete" Click="Undo_Click" HorizontalAlignment="Left" Width="180" Background="#334155"/>
+                                </StackPanel>
+                            </Border>
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Border Classes="card">
+                                <StackPanel Spacing="16">
+                                    <TextBlock Text="Task categories" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock Text="Use the panel to the right to add, rename, and manage categories with a clean layout." Foreground="{StaticResource SubtleText}" FontSize="14"/>
+                                    <Border Background="{StaticResource SectionBackground}" CornerRadius="16" Padding="18" MinHeight="320">
+                                        <StackPanel Spacing="20">
+                                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                                <TextBlock Text="Categories" FontSize="18" FontWeight="SemiBold" Foreground="White"/>
+                                                <TextBlock Text="Right-click a category for quick actions." Foreground="{StaticResource SubtleText}" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <Border Name="CategoryContainer" Background="{StaticResource SectionBackground}" CornerRadius="14" Padding="16">
+                                                <StackPanel x:Name="CategoryPanel" Spacing="16"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
 
-                    <StackPanel Margin="50"
-                                Spacing="30">
+                    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                        <Border Classes="card" MinHeight="520">
+                            <StackPanel Spacing="18">
+                                <TextBlock Text="Focus panel" FontSize="22" FontWeight="Bold" Foreground="White"/>
 
-                        <Border Background="#111827"
-                                CornerRadius="16"
-                                BorderBrush="#1E293B"
-                                BorderThickness="1"
-                                Padding="25">
+                                <Border Background="#111827" CornerRadius="14" Padding="16">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="General category is your default workspace." Foreground="{StaticResource SubtleText}" FontSize="13"/>
+                                        <TextBlock Text="Hover over a task to see action menus or right-click a category to add tasks quickly." Foreground="{StaticResource SubtleText}" FontSize="13"/>
+                                    </StackPanel>
+                                </Border>
 
-                            <StackPanel Spacing="6">
+                                <Border Background="#111827" CornerRadius="14" Padding="16">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="Pro tips" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                                        <TextBlock Text="• Use categories to separate work from personal tasks." Foreground="{StaticResource SubtleText}" FontSize="13"/>
+                                        <TextBlock Text="• Keep overdue tasks visible and resolve them first." Foreground="{StaticResource SubtleText}" FontSize="13"/>
+                                        <TextBlock Text="• Use priority flags for urgent items." Foreground="{StaticResource SubtleText}" FontSize="13"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
 
-                                <TextBlock Text="TaskNest"
-                                           FontSize="42"
-                                           FontWeight="Bold"
-                                           Foreground="White"/>
-
-                                <TextBlock Text="Your Productivity Workspace"
-                                           FontSize="18"
-                                           Foreground="#94A3B8"/>
-
+            <TabItem Header="Guide">
+                <Grid Background="{StaticResource WindowBackground}" Margin="0,8,0,0">
+                    <ScrollViewer>
+                        <StackPanel Margin="50" Spacing="24">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Welcome to TaskNest" FontSize="34" FontWeight="Bold" Foreground="White"/>
+                                <TextBlock Text="A polished task workspace designed for clarity and speed." FontSize="16" Foreground="{StaticResource SubtleText}"/>
                             </StackPanel>
 
-                        </Border>
-
-                        <Border Background="#111827"
-                                CornerRadius="16"
-                                BorderBrush="#1E293B"
-                                BorderThickness="1"
-                                Padding="25">
-
-                            <StackPanel Spacing="15">
-
-                                <TextBlock Text="Quick Add Task"
-                                           FontSize="20"
-                                           FontWeight="SemiBold"
-                                           Foreground="White"/>
-
-                                <Grid ColumnDefinitions="*,Auto"
-                                      ColumnSpacing="12">
-
-                                    <TextBox Name="TaskInput"
-                                             Height="44"
-                                             Background="#0B1120"
-                                             Foreground="White"
-                                             BorderBrush="#334155"
-                                             PlaceholderText="What needs to be done today?"/>
-
-                                    <Button Grid.Column="1"
-                                            Content="Add Task"
-                                            Click="AddTaskToGeneral_Click"
-                                            Background="#2563EB"
-                                            Foreground="White"
-                                            Height="44"
-                                            MinWidth="120"/>
-
-                                </Grid>
-
-                                <Button Content="Undo Last Delete"
-                                        Click="Undo_Click"
-                                        Background="#334155"
-                                        Foreground="White"
-                                        HorizontalAlignment="Left"
-                                        MinWidth="160"/>
-
+                            <StackPanel Orientation="Vertical" Spacing="24">
+                                <Border Classes="card">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock Text="Getting Started" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                                        <TextBlock Text="1. Create categories." Foreground="White"/>
+                                        <TextBlock Text="2. Add tasks." Foreground="White"/>
+                                        <TextBlock Text="3. Organize work with priority and due dates." Foreground="White"/>
+                                        <TextBlock Text="4. Track progress and stay focused." Foreground="White"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Classes="card">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock Text="Productivity Tips" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                                        <TextBlock Text="• Break large tasks into smaller steps." Foreground="White"/>
+                                        <TextBlock Text="• Keep your active list concise." Foreground="White"/>
+                                        <TextBlock Text="• Use categories to separate contexts." Foreground="White"/>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
-
-                        </Border>
-
-                        <Border Background="#111827"
-                                CornerRadius="16"
-                                BorderBrush="#1E293B"
-                                BorderThickness="1"
-                                Padding="20">
-
-                            <StackPanel>
-
-                                <TextBlock Text="Categories"
-                                           FontSize="28"
-                                           FontWeight="Bold"
-                                           Foreground="White"/>
-
-                                <TextBlock Text="Organize your tasks, manage progress and stay productive."
-                                           Foreground="#94A3B8"/>
-
-                            </StackPanel>
-
-                        </Border>
-
-                        <Border Name="CategoryContainer"
-                                Background="#111827"
-                                CornerRadius="16"
-                                BorderBrush="#1E293B"
-                                BorderThickness="1"
-                                Padding="25">
-
-                            <StackPanel Name="CategoryPanel"
-                                        Spacing="20"/>
-
-                        </Border>
-
-                    </StackPanel>
-
-                </ScrollViewer>
-
-            </Grid>
-
-        </TabItem>
-
-        <!-- GUIDE -->
-
-        <TabItem Header="Guide">
-
-            <Grid Background="#0B1120">
-
-                <ScrollViewer>
-
-                    <StackPanel Margin="50"
-                                Spacing="25">
-
-                        <TextBlock Text="Welcome To TaskNest"
-                                   FontSize="38"
-                                   FontWeight="Bold"
-                                   Foreground="White"/>
-
-                        <TextBlock Text="Everything you need to manage your work in one place."
-                                   FontSize="16"
-                                   Foreground="#94A3B8"/>
-
-                        <Border Background="#111827"
-                                CornerRadius="16"
-                                BorderBrush="#1E293B"
-                                BorderThickness="1"
-                                Padding="25">
-
-                            <StackPanel Spacing="10">
-
-                                <TextBlock Text="Getting Started"
-                                           FontSize="22"
-                                           FontWeight="Bold"
-                                           Foreground="White"/>
-
-                                <TextBlock Text="1. Create categories."
-                                           Foreground="White"/>
-
-                                <TextBlock Text="2. Add tasks."
-                                           Foreground="White"/>
-
-                                <TextBlock Text="3. Organize tasks."
-                                           Foreground="White"/>
-
-                                <TextBlock Text="4. Track progress."
-                                           Foreground="White"/>
-
-                            </StackPanel>
-
-                        </Border>
-
-                        <Border Background="#111827"
-                                CornerRadius="16"
-                                BorderBrush="#1E293B"
-                                BorderThickness="1"
-                                Padding="25">
-
-                            <StackPanel Spacing="10">
-
-                                <TextBlock Text="Productivity Tips"
-                                           FontSize="22"
-                                           FontWeight="Bold"
-                                           Foreground="White"/>
-
-                                <TextBlock Text="• Break large tasks into smaller tasks."
-                                           Foreground="White"/>
-
-                                <TextBlock Text="• Stay focused on today's work."
-                                           Foreground="White"/>
-
-                                <TextBlock Text="• Keep categories organized."
-                                           Foreground="White"/>
-
-                            </StackPanel>
-
-                        </Border>
-
-                    </StackPanel>
-
-                </ScrollViewer>
-
-            </Grid>
-
-        </TabItem>
-
-        <!-- SETTINGS -->
-
-        <TabItem Header="Settings">
-
-            <Grid Background="#0B1120">
-
-                <ScrollViewer>
-
-                    <StackPanel Margin="50"
-                                Spacing="25">
-
-                        <TextBlock Text="Settings"
-                                   FontSize="38"
-                                   FontWeight="Bold"
-                                   Foreground="White"/>
-
-                        <TextBlock Text="Customize your TaskNest experience."
-                                   FontSize="16"
-                                   Foreground="#94A3B8"/>
-
-                        <Border Background="#111827"
-                                CornerRadius="16"
-                                BorderBrush="#1E293B"
-                                BorderThickness="1"
-                                Padding="25">
-
-                            <StackPanel Spacing="15">
-
-                                <TextBlock Text="Theme"
-                                           FontSize="22"
-                                           FontWeight="Bold"
-                                           Foreground="White"/>
-
-                                <TextBlock Text="Choose your preferred color scheme."
-                                           Foreground="#94A3B8"/>
-
-                                <ComboBox Name="ThemePicker"
-                                          SelectedIndex="0">
-
-                                    <ComboBoxItem Content="🌑 Midnight"/>
-                                    <ComboBoxItem Content="🌊 Ocean Blue"/>
-                                    <ComboBoxItem Content="🌌 Purple Night"/>
-                                    <ComboBoxItem Content="🌲 Emerald"/>
-                                    <ComboBoxItem Content="☀ Light Mode"/>
-
-                                </ComboBox>
-
-                            </StackPanel>
-
-                        </Border>
-
-                        <Border Background="#111827"
-                                CornerRadius="16"
-                                BorderBrush="#1E293B"
-                                BorderThickness="1"
-                                Padding="25">
-
-                            <StackPanel Spacing="10">
-
-                                <TextBlock Text="About TaskNest"
-                                           FontSize="22"
-                                           FontWeight="Bold"
-                                           Foreground="White"/>
-
-                                <TextBlock Text="Version 2.0"
-                                           Foreground="White"/>
-
-                                <TextBlock Text="Built with Avalonia UI"
-                                           Foreground="#94A3B8"/>
-
-                                <TextBlock Text="TaskNest helps you organize tasks, categories and productivity in one place."
-                                           Foreground="#94A3B8"
-                                           TextWrapping="Wrap"/>
-
-                            </StackPanel>
-
-                        </Border>
-
-                    </StackPanel>
-
-                </ScrollViewer>
-
-            </Grid>
-
-        </TabItem>
-
-    </TabControl>
-
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Settings">
+                <Grid Background="{StaticResource WindowBackground}" Margin="0,8,0,0">
+                    <ScrollViewer>
+                        <StackPanel Margin="50" Spacing="24">
+                            <Border Classes="card">
+                                <StackPanel Spacing="16">
+                                    <TextBlock Text="Settings" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock Text="Choose a workspace style and review app details." Foreground="{StaticResource SubtleText}"/>
+                                    <Border Background="{StaticResource SectionBackground}" CornerRadius="16" Padding="20">
+                                        <StackPanel Spacing="14">
+                                            <TextBlock Text="Theme" FontSize="20" FontWeight="SemiBold" Foreground="White"/>
+                                            <TextBlock Text="Select the color style for the app." Foreground="{StaticResource SubtleText}"/>
+                                            <ComboBox Name="ThemePicker" SelectedIndex="0">
+                                                <ComboBoxItem Content="🌑 Midnight"/>
+                                                <ComboBoxItem Content="🌊 Ocean Blue"/>
+                                                <ComboBoxItem Content="🌌 Purple Night"/>
+                                                <ComboBoxItem Content="🌲 Emerald"/>
+                                                <ComboBoxItem Content="☀ Light Mode"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <Border Classes="card">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="About TaskNest" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock Text="Version 2.0" Foreground="White"/>
+                                    <TextBlock Text="Built with Avalonia UI" Foreground="{StaticResource SubtleText}"/>
+                                    <TextBlock Text="TaskNest helps you organize tasks, categories and productivity in one place." Foreground="{StaticResource SubtleText}" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
 </Window>
