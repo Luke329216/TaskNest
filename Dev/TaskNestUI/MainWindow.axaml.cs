@@ -23,20 +23,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        var taskInput = this.FindControl<TextBox>("TaskInput");
-
-        if (taskInput != null)
-        {
-            taskInput.KeyDown += (_, e) =>
-            {
-                if (e.Key == Key.Enter)
-                {
-                    AddTaskToGeneral_Click(null, new RoutedEventArgs());
-                }
-            };
-        }
-
-        categories.Add(new TodoCategory { Name = "General" });
+        categories.Add(new TodoCategory { Name = "General", Icon = "📁" });
 
         SetupRightClick();
         BuildUI();
@@ -102,48 +89,9 @@ public partial class MainWindow : Window
 
         foreach (var category in categories)
         {
-            int completedCount = category.CompletedTasks.Count;
-            int activeCount = category.Tasks.Count;
-            int totalCount = completedCount + activeCount;
-
-            double progressPercent = 0;
-
-            if (totalCount > 0)
-            {
-                progressPercent = (double)completedCount / totalCount;
-            }
-
-            var headerStack = new StackPanel
-            {
-                Spacing = 3
-            };
-
-            headerStack.Children.Add(new TextBlock
-            {
-                Text = $"{category.Name} ({activeCount})",
-                Foreground = Brushes.White,
-                FontWeight = FontWeight.Bold
-            });
-
-            headerStack.Children.Add(new ProgressBar
-            {
-                Minimum = 0,
-                Maximum = 100,
-                Value = progressPercent * 100,
-                Width = 250,
-                Height = 12
-            });
-
-            headerStack.Children.Add(new TextBlock
-            {
-                Text = $"{(int)(progressPercent * 100)}% Complete",
-                Foreground = Brushes.LightGray,
-                FontSize = 11
-            });
-
             var expander = new Expander
             {
-                Header = headerStack,
+                Header = $"{category.Icon}  {category.Name} ({category.Tasks.Count})",
                 IsExpanded = true
             };
 
@@ -196,7 +144,7 @@ public partial class MainWindow : Window
         inputToFocus?.Focus();
     }
 
-        private ContextMenu BuildCategoryMenu(TodoCategory category)
+    private ContextMenu BuildCategoryMenu(TodoCategory category)
     {
         var menu = new ContextMenu();
 
@@ -216,46 +164,33 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
-        var deleteCategory = new MenuItem
+        // ⭐ Emoji Icon Picker
+        var iconMenu = new MenuItem { Header = "Change Icon" };
+
+        string[] icons =
         {
-            Header = "Delete Category"
+            "📁", "⭐", "📚", "💼", "🛒", "🎮", "🧹", "📝", "💡", "🔥", "❤️", "📅"
         };
 
-        deleteCategory.Click += (_, _) =>
+        foreach (var icon in icons)
         {
-            // Don't allow deleting General
-            if (category.Name == "General")
-                return;
-
-            var general = categories.First(c => c.Name == "General");
-
-            foreach (var task in category.Tasks.ToList())
+            var item = new MenuItem { Header = icon };
+            item.Click += (_, _) =>
             {
-                general.Tasks.Add(task);
-            }
-
-            foreach (var task in category.CompletedTasks.ToList())
-            {
-                general.CompletedTasks.Add(task);
-            }
-
-            categories.Remove(category);
-
-            BuildUI();
-        };
+                category.Icon = icon;
+                BuildUI();
+            };
+            iconMenu.Items.Add(item);
+        }
 
         menu.Items.Add(addTask);
         menu.Items.Add(addCategory);
-
-        if (category.Name != "General")
-        {
-            menu.Items.Add(deleteCategory);
-        }
+        menu.Items.Add(iconMenu);
 
         return menu;
     }
 
-    // ⭐ TASK RIGHT‑CLICK MENU: MOVE TO + PRIORITY + DUE DATE + DELETE
+    // ⭐ Task right-click menu (unchanged)
     private ContextMenu BuildTaskMenu(TodoTask task, TodoCategory category)
     {
         var menu = new ContextMenu();
@@ -313,7 +248,7 @@ public partial class MainWindow : Window
         priorityMenu.Items.Add(low);
         priorityMenu.Items.Add(none);
 
-        // ⭐ Due Date submenu
+        // Due Date submenu
         var dueMenu = new MenuItem { Header = "Set Due Date" };
 
         var today = new MenuItem { Header = "Today" };
@@ -365,7 +300,6 @@ public partial class MainWindow : Window
         return menu;
     }
 
-    // ⭐ Calendar popup (fully fixed)
     private async void ShowDatePicker(TodoTask task)
     {
         var dialog = new Window
@@ -454,7 +388,7 @@ public partial class MainWindow : Window
 
         if (category == null)
         {
-            categories.Add(new TodoCategory { Name = text });
+            categories.Add(new TodoCategory { Name = text, Icon = "📁" });
         }
         else
         {
@@ -486,7 +420,6 @@ public partial class MainWindow : Window
 
         var text = new TextBlock { Text = task.Text };
 
-        // Priority colors
         switch (task.Priority)
         {
             case TaskPriority.High:
@@ -506,7 +439,6 @@ public partial class MainWindow : Window
                 break;
         }
 
-        // ⭐ Due date display
         if (task.DueDate.HasValue)
         {
             var due = task.DueDate.Value;
@@ -520,7 +452,6 @@ public partial class MainWindow : Window
                 Margin = new Avalonia.Thickness(10, 0, 0, 0)
             };
 
-            // ⭐ Overdue icon
             if (due < DateTime.Today)
             {
                 dueText.Text = "⚠️ OVERDUE";
