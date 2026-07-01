@@ -36,7 +36,7 @@ public partial class MainWindow : Window
             };
         }
 
-        categories.Add(new TodoCategory { Name = "General" });
+        categories.Add(new TodoCategory { Name = "General", Icon = "📁" });
 
         SetupRightClick();
         BuildUI();
@@ -118,12 +118,28 @@ public partial class MainWindow : Window
                 Spacing = 3
             };
 
-            headerStack.Children.Add(new TextBlock
+            // ⭐ CATEGORY ICON + NAME
+            var headerRow = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8
+            };
+
+            headerRow.Children.Add(new TextBlock
+            {
+                Text = category.Icon,
+                FontSize = 22,
+                Margin = new Avalonia.Thickness(0, -2, 0, 0)
+            });
+
+            headerRow.Children.Add(new TextBlock
             {
                 Text = $"{category.Name} ({activeCount})",
                 Foreground = Brushes.White,
                 FontWeight = FontWeight.Bold
             });
+
+            headerStack.Children.Add(headerRow);
 
             headerStack.Children.Add(new ProgressBar
             {
@@ -196,7 +212,7 @@ public partial class MainWindow : Window
         inputToFocus?.Focus();
     }
 
-        private ContextMenu BuildCategoryMenu(TodoCategory category)
+    private ContextMenu BuildCategoryMenu(TodoCategory category)
     {
         var menu = new ContextMenu();
 
@@ -216,6 +232,25 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
+        // ⭐ CATEGORY ICON PICKER
+        var changeIcon = new MenuItem { Header = "Change Icon" };
+
+        string[] icons =
+        {
+            "📁","📚","🏠","💼","🎮","🛒","💪","🧹","⭐","🔥"
+        };
+
+        foreach (var icon in icons)
+        {
+            var item = new MenuItem { Header = icon };
+            item.Click += (_, _) =>
+            {
+                category.Icon = icon;
+                BuildUI();
+            };
+            changeIcon.Items.Add(item);
+        }
+
         var deleteCategory = new MenuItem
         {
             Header = "Delete Category"
@@ -223,7 +258,6 @@ public partial class MainWindow : Window
 
         deleteCategory.Click += (_, _) =>
         {
-            // Don't allow deleting General
             if (category.Name == "General")
                 return;
 
@@ -246,6 +280,7 @@ public partial class MainWindow : Window
 
         menu.Items.Add(addTask);
         menu.Items.Add(addCategory);
+        menu.Items.Add(changeIcon);
 
         if (category.Name != "General")
         {
@@ -255,12 +290,10 @@ public partial class MainWindow : Window
         return menu;
     }
 
-    // ⭐ TASK RIGHT‑CLICK MENU: MOVE TO + PRIORITY + DUE DATE + DELETE
     private ContextMenu BuildTaskMenu(TodoTask task, TodoCategory category)
     {
         var menu = new ContextMenu();
 
-        // Move To submenu
         var moveTo = new MenuItem { Header = "Move To" };
 
         foreach (var cat in categories)
@@ -277,7 +310,6 @@ public partial class MainWindow : Window
             moveTo.Items.Add(item);
         }
 
-        // Priority submenu
         var priorityMenu = new MenuItem { Header = "Set Priority" };
 
         var high = new MenuItem { Header = "High (Red)" };
@@ -313,7 +345,6 @@ public partial class MainWindow : Window
         priorityMenu.Items.Add(low);
         priorityMenu.Items.Add(none);
 
-        // ⭐ Due Date submenu
         var dueMenu = new MenuItem { Header = "Set Due Date" };
 
         var today = new MenuItem { Header = "Today" };
@@ -353,7 +384,6 @@ public partial class MainWindow : Window
         dueMenu.Items.Add(pickDate);
         dueMenu.Items.Add(clearDate);
 
-        // Delete
         var delete = new MenuItem { Header = "Delete" };
         delete.Click += (_, _) => DeleteTask(task, category);
 
@@ -365,7 +395,6 @@ public partial class MainWindow : Window
         return menu;
     }
 
-    // ⭐ Calendar popup (fully fixed)
     private async void ShowDatePicker(TodoTask task)
     {
         var dialog = new Window
@@ -454,7 +483,7 @@ public partial class MainWindow : Window
 
         if (category == null)
         {
-            categories.Add(new TodoCategory { Name = text });
+            categories.Add(new TodoCategory { Name = text, Icon = "📁" });
         }
         else
         {
@@ -484,9 +513,16 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
+        // ⭐ TASK PRIORITY ICON
+        var iconText = new TextBlock
+        {
+            Text = task.Icon,
+            FontSize = 18,
+            Margin = new Avalonia.Thickness(0, 0, 6, 0)
+        };
+
         var text = new TextBlock { Text = task.Text };
 
-        // Priority colors
         switch (task.Priority)
         {
             case TaskPriority.High:
@@ -506,7 +542,6 @@ public partial class MainWindow : Window
                 break;
         }
 
-        // ⭐ Due date display
         if (task.DueDate.HasValue)
         {
             var due = task.DueDate.Value;
@@ -520,12 +555,19 @@ public partial class MainWindow : Window
                 Margin = new Avalonia.Thickness(10, 0, 0, 0)
             };
 
-            // ⭐ Overdue icon
             if (due < DateTime.Today)
             {
                 dueText.Text = "⚠️ OVERDUE";
                 dueText.Foreground = Brushes.Red;
             }
+
+            var dueIcon = new TextBlock
+            {
+                Text = task.DueIcon,
+                FontSize = 16,
+                Margin = new Avalonia.Thickness(6, 0, 0, 0),
+                Foreground = Brushes.LightGray
+            };
 
             var stack = new StackPanel
             {
@@ -533,7 +575,9 @@ public partial class MainWindow : Window
                 Spacing = 10
             };
 
+            stack.Children.Add(iconText);
             stack.Children.Add(text);
+            stack.Children.Add(dueIcon);
             stack.Children.Add(dueText);
 
             row.Children.Add(check);
@@ -553,15 +597,24 @@ public partial class MainWindow : Window
             return row;
         }
 
+        var stackNoDue = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 10
+        };
+
+        stackNoDue.Children.Add(iconText);
+        stackNoDue.Children.Add(text);
+
         var deleteBtn = new Button { Content = "X" };
         deleteBtn.Click += (_, _) => DeleteTask(task, category);
 
         row.Children.Add(check);
-        row.Children.Add(text);
+        row.Children.Add(stackNoDue);
         row.Children.Add(deleteBtn);
 
         Grid.SetColumn(check, 0);
-        Grid.SetColumn(text, 1);
+        Grid.SetColumn(stackNoDue, 1);
         Grid.SetColumn(deleteBtn, 2);
 
         row.ContextMenu = BuildTaskMenu(task, category);
@@ -586,6 +639,13 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
+        var iconText = new TextBlock
+        {
+            Text = "✔️",
+            FontSize = 18,
+            Margin = new Avalonia.Thickness(0, 0, 6, 0)
+        };
+
         var text = new TextBlock
         {
             Text = task.Text,
@@ -600,12 +660,21 @@ public partial class MainWindow : Window
             BuildUI();
         };
 
+        var stack = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 10
+        };
+
+        stack.Children.Add(iconText);
+        stack.Children.Add(text);
+
         row.Children.Add(check);
-        row.Children.Add(text);
+        row.Children.Add(stack);
         row.Children.Add(delete);
 
         Grid.SetColumn(check, 0);
-        Grid.SetColumn(text, 1);
+        Grid.SetColumn(stack, 1);
         Grid.SetColumn(delete, 2);
 
         return row;

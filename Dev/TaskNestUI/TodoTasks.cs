@@ -18,4 +18,22 @@ public class TodoTask
 
     // Due Date
     public DateTime? DueDate { get; set; }
+
+    // ⭐ Removed priority icons — now always blank
+    public string Icon => "";
+
+    // ⭐ Keep due-date icons (you didn’t ask to remove these)
+    public string DueIcon
+    {
+        get
+        {
+            if (!DueDate.HasValue)
+                return "";
+
+            if (DueDate.Value < DateTime.Today)
+                return "⛔";   // overdue
+
+            return "📅";       // normal due date
+        }
+    }
 }
