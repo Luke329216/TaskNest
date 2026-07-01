@@ -36,18 +36,7 @@ public partial class MainWindow : Window
             };
         }
 
-        var themePicker = this.FindControl<ComboBox>("ThemePicker");
-
-        if (themePicker != null)
-        {
-            themePicker.SelectionChanged += ThemePicker_SelectionChanged;
-        }
-
-        categories.Add(new TodoCategory
-        {
-            Name = "General",
-            Icon = "📁"
-        });
+        categories.Add(new TodoCategory { Name = "General", Icon = "📁" });
 
         SetupRightClick();
         BuildUI();
@@ -689,60 +678,6 @@ public partial class MainWindow : Window
         Grid.SetColumn(delete, 2);
 
         return row;
-    }
-
-    private void ApplyMidnightTheme_Click(object? sender, RoutedEventArgs e)
-    {
-        Background = new SolidColorBrush(Color.Parse("#0B1120"));
-    }
-
-    private void ApplyOceanTheme_Click(object? sender, RoutedEventArgs e)
-    {
-        Background = new SolidColorBrush(Color.Parse("#0F172A"));
-    }
-
-    private void ApplyPurpleTheme_Click(object? sender, RoutedEventArgs e)
-    {
-        Background = new SolidColorBrush(Color.Parse("#2D1B69"));
-    }
-
-    private void ApplyEmeraldTheme_Click(object? sender, RoutedEventArgs e)
-    {
-        Background = new SolidColorBrush(Color.Parse("#064E3B"));
-    }
-
-    private void ApplyLightTheme_Click(object? sender, RoutedEventArgs e)
-    {
-        Background = Brushes.White;
-    }
-
-    private void ThemePicker_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        if (sender is not ComboBox combo)
-            return;
-
-        switch (combo.SelectedIndex)
-        {
-            case 0:
-                Background = new SolidColorBrush(Color.Parse("#0B1120"));
-                break;
-
-            case 1:
-                Background = new SolidColorBrush(Color.Parse("#0F172A"));
-                break;
-
-            case 2:
-                Background = new SolidColorBrush(Color.Parse("#2D1B69"));
-                break;
-
-            case 3:
-                Background = new SolidColorBrush(Color.Parse("#064E3B"));
-                break;
-
-            case 4:
-                Background = Brushes.White;
-                break;
-        }
     }
 
     private void DeleteTask(TodoTask task, TodoCategory category)
