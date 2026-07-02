@@ -19,14 +19,8 @@ public class TodoTask
     // Due Date
     public DateTime? DueDate { get; set; }
 
-    // ⭐ Removed priority icons — now always blank
-    public string Icon => Priority switch
-    {
-        TaskPriority.High => "🔥",
-        TaskPriority.Medium => "⚡",
-        TaskPriority.Low => "✅",
-        _ => "•"
-    };
+    // Priority icons intentionally removed; task label color indicates priority.
+    public string Icon => string.Empty;
 
     public string DueIcon
     {
