@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Themes.Fluent;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ public partial class MainWindow : Window
 {
     private ObservableCollection<TodoCategory> categories = new();
     private Stack<(TodoTask Task, TodoCategory Category, int Index)> deletedTasks = new();
+    private HashSet<TodoCategory> expandedCategories = new();
 
     private string inlineAction = "";
     private TodoCategory? inlineCategory = null;
@@ -22,25 +24,67 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
-        InitializeComponent();
-
-        var taskInput = this.FindControl<TextBox>("TaskInput");
-
-        if (taskInput != null)
+        try
         {
-            taskInput.KeyDown += (_, e) =>
+            InitializeComponent();
+
+            var taskInput = this.FindControl<TextBox>("TaskInput");
+
+            if (taskInput != null)
             {
-                if (e.Key == Key.Enter)
+                taskInput.KeyDown += (_, e) =>
                 {
-                    AddTaskToGeneral_Click(null, new RoutedEventArgs());
+                    if (e.Key == Key.Enter)
+                    {
+                        AddTaskToGeneral_Click(null, new RoutedEventArgs());
+                    }
+                };
+            }
+
+            // Wire ThemePicker selection in code-behind to avoid XAML hookup issues
+            var themePicker = this.FindControl<ComboBox>("ThemePicker");
+            if (themePicker != null)
+            {
+                themePicker.SelectionChanged += ThemePicker_SelectionChanged;
+                // Apply the currently selected theme immediately
+                if (themePicker.SelectedIndex >= 0)
+                {
+                    ThemePicker_SelectionChanged(themePicker, null);
                 }
-            };
+            }
+
+            // Ensure TabItem header text doesn't turn white on hover by forcing Foreground
+            var tabControl = this.FindControl<TabControl>("MainTabs");
+            if (tabControl != null)
+            {
+                // Iterate TabItem instances declared in XAML
+                foreach (var obj in tabControl.Items)
+                {
+                    if (obj is TabItem ti)
+                    {
+                        void ApplyPrimaryForeground() => ti.Foreground = Application.Current?.Resources["PrimaryText"] as IBrush ?? Brushes.Black;
+
+                        ApplyPrimaryForeground();
+                    }
+                }
+            }
+
+            categories.Add(new TodoCategory { Name = "General", Icon = "📁" });
+
+            SetupRightClick();
+            BuildUI();
         }
+        catch (System.Exception ex)
+        {
+            try
+            {
+                var log = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestStartup.log");
+                System.IO.File.AppendAllText(log, "MainWindow ctor exception: " + ex + System.Environment.NewLine);
+            }
+            catch {}
 
-        categories.Add(new TodoCategory { Name = "General", Icon = "📁" });
-
-        SetupRightClick();
-        BuildUI();
+            throw;
+        }
     }
 
     private void SetupRightClick()
@@ -136,7 +180,7 @@ public partial class MainWindow : Window
             headerRow.Children.Add(new TextBlock
             {
                 Text = $"{category.Name} ({activeCount})",
-                Foreground = Brushes.White,
+                Foreground = Application.Current?.Resources["PrimaryText"] as IBrush ?? Brushes.White,
                 FontWeight = FontWeight.Bold
             });
 
@@ -148,43 +192,119 @@ public partial class MainWindow : Window
                 Maximum = 100,
                 Value = progressPercent * 100,
                 Width = 250,
-                Height = 12
+                Height = 12,
+                Foreground = Application.Current?.Resources["AccentColor"] as IBrush
             });
 
             headerStack.Children.Add(new TextBlock
             {
                 Text = $"{(int)(progressPercent * 100)}% Complete",
-                Foreground = Brushes.LightGray,
+                Foreground = Application.Current?.Resources["SubtleText"] as IBrush ?? Brushes.LightGray,
                 FontSize = 11
             });
 
-            var expander = new Expander
+            // Use a header border so the header area uses SectionBackground (white in Light Mode)
+            var headerBorder = new Border
             {
-                Header = headerStack,
-                IsExpanded = true
+                Background = Application.Current?.Resources["SectionBackground"] as IBrush,
+                Padding = new Avalonia.Thickness(8,6,8,6)
+            };
+            headerBorder.CornerRadius = new CornerRadius(12,12,0,0);
+
+            // Create header grid with left content and right toggle so we control both areas' backgrounds
+            var headerGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+            headerGrid.Children.Add(headerStack);
+
+            var isExpanded = expandedCategories.Contains(category);
+
+            var contentPanel = new StackPanel { Spacing = 8 };
+
+            var toggleBtn = new Button
+            {
+                Content = isExpanded ? "▴" : "▾",
+                Background = Application.Current?.Resources["SectionBackground"] as IBrush,
+                Foreground = Application.Current?.Resources["PrimaryText"] as IBrush,
+                BorderBrush = Application.Current?.Resources["CardBorder"] as IBrush,
+                Width = 44,
+                Height = 44,
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+                Padding = new Avalonia.Thickness(0)
             };
 
-            expander.ContextMenu = BuildCategoryMenu(category);
+            toggleBtn.Click += (_, _) =>
+            {
+                var now = !(contentPanel.IsVisible);
+                contentPanel.IsVisible = now;
+                toggleBtn.Content = now ? "▴" : "▾";
+                if (now) expandedCategories.Add(category); else expandedCategories.Remove(category);
+            };
 
-            var mainStack = new StackPanel { Spacing = 8 };
+            Grid.SetColumn(toggleBtn, 1);
+            headerGrid.Children.Add(toggleBtn);
+
+            headerBorder.Child = headerGrid;
+            // Attach category context menu to header
+            headerBorder.ContextMenu = BuildCategoryMenu(category);
+
+            // Content for the pseudo-expander
+            var mainStack = contentPanel;
+            mainStack.Spacing = 8;
+            mainStack.IsVisible = isExpanded;
+
+            // Build content later (we'll populate mainStack below)
 
             if (category.CompletedTasks.Count > 0)
             {
-                var completedExpander = new Expander
+                // Build a completed section header + toggle (matches category header style)
+                var compHeader = new StackPanel { Spacing = 0 };
+                compHeader.Children.Add(new TextBlock { Text = $"Completed ({category.CompletedTasks.Count})", Foreground = Application.Current?.Resources["PrimaryText"] as IBrush, FontWeight = FontWeight.SemiBold });
+
+                var compHeaderBorder = new Border
                 {
-                    Header = $"Completed ({category.CompletedTasks.Count})",
-                    IsExpanded = true
+                    Background = Application.Current?.Resources["SectionBackground"] as IBrush,
+                    Padding = new Avalonia.Thickness(8,6,8,6)
                 };
 
-                var completedStack = new StackPanel { Spacing = 5 };
+                var compHeaderGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+                compHeaderGrid.Children.Add(compHeader);
 
+                var compContentPanel = new StackPanel { Spacing = 5 };
                 foreach (var task in category.CompletedTasks.ToList())
                 {
-                    completedStack.Children.Add(CreateCompletedRow(task, category));
+                    compContentPanel.Children.Add(CreateCompletedRow(task, category));
                 }
 
-                completedExpander.Content = completedStack;
-                mainStack.Children.Add(completedExpander);
+                var compIsExpanded = true;
+                var compToggle = new Button
+                {
+                    Content = compIsExpanded ? "▴" : "▾",
+                    Background = Application.Current?.Resources["SectionBackground"] as IBrush,
+                    Foreground = Application.Current?.Resources["PrimaryText"] as IBrush,
+                    BorderBrush = Application.Current?.Resources["CardBorder"] as IBrush,
+                    Width = 44,
+                    Height = 44,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+                    Padding = new Avalonia.Thickness(0)
+                };
+                compToggle.Click += (_, _) =>
+                {
+                    var now = !(compContentPanel.IsVisible);
+                    compContentPanel.IsVisible = now;
+                    compToggle.Content = now ? "▴" : "▾";
+                };
+
+                Grid.SetColumn(compToggle, 1);
+                compHeaderGrid.Children.Add(compToggle);
+                compHeaderBorder.Child = compHeaderGrid;
+                compHeaderBorder.CornerRadius = new CornerRadius(10,10,0,0);
+
+                compContentPanel.IsVisible = compIsExpanded;
+
+                var compContainer = new StackPanel { Spacing = 0 };
+                compContainer.Children.Add(compHeaderBorder);
+                compContainer.Children.Add(compContentPanel);
+
+                mainStack.Children.Add(compContainer);
             }
 
             var taskStack = new StackPanel { Spacing = 5 };
@@ -200,9 +320,20 @@ public partial class MainWindow : Window
             }
 
             mainStack.Children.Add(taskStack);
-            expander.Content = mainStack;
 
-            panel.Children.Add(expander);
+            // Combine header and content into a single container and wrap in card Border
+            var containerStack = new StackPanel { Spacing = 0 };
+            containerStack.Children.Add(headerBorder);
+            containerStack.Children.Add(mainStack);
+
+            var cardWrapper = new Border
+            {
+                Child = containerStack,
+                Margin = new Avalonia.Thickness(0, 0, 0, 10)
+            };
+            cardWrapper.Classes.Add("card");
+
+            panel.Children.Add(cardWrapper);
         }
 
         if (inlineAction == "AddCategory")
@@ -432,7 +563,7 @@ public partial class MainWindow : Window
     {
         var border = new Border
         {
-            Background = Brushes.LightGray,
+            Background = Application.Current?.Resources["SectionBackground"] as IBrush ?? Brushes.LightGray,
             CornerRadius = new Avalonia.CornerRadius(6),
             Padding = new Avalonia.Thickness(8)
         };
@@ -499,6 +630,16 @@ public partial class MainWindow : Window
 
     private Border CreateTaskRow(TodoTask task, TodoCategory category)
     {
+        IBrush GetPriorityBrushLocal(TaskPriority p)
+        {
+            return p switch
+            {
+                TaskPriority.High => new SolidColorBrush(Color.Parse("#EF4444")),
+                TaskPriority.Medium => new SolidColorBrush(Color.Parse("#F59E0B")),
+                TaskPriority.Low => new SolidColorBrush(Color.Parse("#10B981")),
+                _ => Application.Current?.Resources["PrimaryText"] as IBrush ?? Brushes.White,
+            };
+        }
         var row = new Grid
         {
             ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"),
@@ -509,7 +650,12 @@ public partial class MainWindow : Window
         var check = new CheckBox
         {
             VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Avalonia.Thickness(0, 0, 0, 0)
+            Margin = new Avalonia.Thickness(0, 0, 8, 0),
+            Foreground = Application.Current?.Resources["PrimaryText"] as IBrush,
+            BorderBrush = Application.Current?.Resources["ControlBorder"] as IBrush,
+            Background = Application.Current?.Resources["SectionBackground"] as IBrush,
+            Width = 28,
+            Height = 28
         };
 
         check.Click += (_, _) =>
@@ -543,7 +689,7 @@ public partial class MainWindow : Window
         {
             Text = task.Text,
             FontSize = 15,
-            Foreground = Brushes.White,
+            Foreground = GetPriorityBrushLocal(task.Priority),
             TextWrapping = TextWrapping.Wrap,
             VerticalAlignment = VerticalAlignment.Center
         });
@@ -560,7 +706,7 @@ public partial class MainWindow : Window
         metaRow.Children.Add(new TextBlock
         {
             Text = task.Priority == TaskPriority.None ? "Normal" : task.Priority.ToString(),
-            Foreground = Brushes.LightGray,
+            Foreground = Application.Current?.Resources["SubtleText"] as IBrush ?? Brushes.LightGray,
             FontSize = 12
         });
 
@@ -572,7 +718,7 @@ public partial class MainWindow : Window
             metaRow.Children.Add(new TextBlock
             {
                 Text = display,
-                Foreground = due < DateTime.Today ? Brushes.Red : Brushes.LightGray,
+                Foreground = due < DateTime.Today ? Brushes.Red : Application.Current?.Resources["SubtleText"] as IBrush ?? Brushes.LightGray,
                 FontSize = 12
             });
         }
@@ -582,11 +728,15 @@ public partial class MainWindow : Window
         var deleteBtn = new Button
         {
             Content = "✕",
-            Width = 34,
-            Height = 34,
+            Width = 28,
+            Height = 28,
             Background = Brushes.Transparent,
             BorderBrush = Brushes.Transparent,
-            Foreground = Brushes.LightGray
+            Foreground = Application.Current?.Resources["SubtleText"] as IBrush ?? Brushes.LightGray,
+            Margin = new Avalonia.Thickness(0,0,20,0),
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Padding = new Avalonia.Thickness(2),
+            VerticalAlignment = VerticalAlignment.Center
         };
         deleteBtn.Click += (_, _) => DeleteTask(task, category);
 
@@ -600,7 +750,7 @@ public partial class MainWindow : Window
 
         var wrapper = new Border
         {
-            Background = new SolidColorBrush(Color.Parse("#0F172A")),
+            Background = Application.Current?.Resources["SectionBackground"] as IBrush ?? new SolidColorBrush(Color.Parse("#0F172A")),
             CornerRadius = new CornerRadius(14),
             Padding = new Avalonia.Thickness(14),
             Margin = new Avalonia.Thickness(0, 0, 0, 10),
@@ -623,7 +773,12 @@ public partial class MainWindow : Window
         var check = new CheckBox
         {
             IsChecked = true,
-            VerticalAlignment = VerticalAlignment.Center
+            VerticalAlignment = VerticalAlignment.Center,
+            Foreground = Application.Current?.Resources["PrimaryText"] as IBrush,
+            BorderBrush = Application.Current?.Resources["ControlBorder"] as IBrush,
+            Background = Application.Current?.Resources["SectionBackground"] as IBrush,
+            Width = 24,
+            Height = 24
         };
 
         check.Click += (_, _) =>
@@ -638,18 +793,23 @@ public partial class MainWindow : Window
             Text = task.Text,
             TextDecorations = TextDecorations.Strikethrough,
             Opacity = 0.6,
-            Foreground = Brushes.LightGray,
-            TextWrapping = TextWrapping.Wrap
+            Foreground = Application.Current?.Resources["SubtleText"] as IBrush ?? Brushes.LightGray,
+            TextWrapping = TextWrapping.Wrap,
+            VerticalAlignment = VerticalAlignment.Center
         };
 
         var delete = new Button
         {
             Content = "✕",
-            Width = 34,
-            Height = 34,
+            Width = 28,
+            Height = 28,
             Background = Brushes.Transparent,
             BorderBrush = Brushes.Transparent,
-            Foreground = Brushes.LightGray
+            Foreground = Application.Current?.Resources["SubtleText"] as IBrush ?? Brushes.LightGray,
+            Margin = new Avalonia.Thickness(0,0,20,0),
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Padding = new Avalonia.Thickness(2),
+            VerticalAlignment = VerticalAlignment.Center
         };
         delete.Click += (_, _) =>
         {
@@ -667,7 +827,7 @@ public partial class MainWindow : Window
 
         var wrapper = new Border
         {
-            Background = new SolidColorBrush(Color.Parse("#0F172A")),
+            Background = Application.Current?.Resources["SectionBackground"] as IBrush ?? new SolidColorBrush(Color.Parse("#0F172A")),
             CornerRadius = new CornerRadius(14),
             Padding = new Avalonia.Thickness(14),
             Margin = new Avalonia.Thickness(0, 0, 0, 10),
@@ -677,33 +837,116 @@ public partial class MainWindow : Window
         return wrapper;
     }
 
-    private void ThemePicker_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private void ThemePicker_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
     {
         if (sender is not ComboBox combo)
             return;
+        var resources = Application.Current?.Resources;
+        if (resources == null) return;
+
+        // Define palettes for each theme index. Update application resources so styles update across the app.
+        Color ParseColor(string hex) => Color.Parse(hex);
+
+        void SetBrush(string key, string hex)
+        {
+            if (resources.TryGetValue(key, out var existing) && existing is SolidColorBrush sb)
+            {
+                sb.Color = ParseColor(hex);
+            }
+            else
+            {
+                resources[key] = new SolidColorBrush(ParseColor(hex));
+            }
+        }
+
+        void SetBrushObj(string key, IBrush brush)
+        {
+            if (resources.TryGetValue(key, out var existing) && existing is SolidColorBrush sb && brush is SolidColorBrush newSb)
+            {
+                sb.Color = newSb.Color;
+            }
+            else
+            {
+                resources[key] = brush;
+            }
+        }
 
         switch (combo.SelectedIndex)
         {
+            // Midnight
             case 0:
-                Background = new SolidColorBrush(Color.Parse("#0B1120"));
+                SetBrush("WindowBackground", "#0B1120");
+                SetBrush("CardBackground", "#0F172A");
+                SetBrush("SectionBackground", "#0F172A");
+                SetBrush("SubtleText", "#94A3B8");
+                SetBrush("AccentColor", "#2563EB");
+                SetBrushObj("PrimaryText", Brushes.White);
+                SetBrush("ControlBorder", "#334155");
+                SetBrush("CardBorder", "#1E293B");
+                SetBrush("MutedButtonBackground", "#334155");
                 break;
 
+            // Ocean Blue
             case 1:
-                Background = new SolidColorBrush(Color.Parse("#0F172A"));
+                SetBrush("WindowBackground", "#071025");
+                SetBrush("CardBackground", "#081935");
+                SetBrush("SectionBackground", "#0B2540");
+                SetBrush("SubtleText", "#9FB8D6");
+                SetBrush("AccentColor", "#0EA5E9");
+                SetBrushObj("PrimaryText", Brushes.White);
+                SetBrush("ControlBorder", "#223049");
+                SetBrush("CardBorder", "#0F2433");
+                SetBrush("MutedButtonBackground", "#223049");
                 break;
 
+            // Purple Night
             case 2:
-                Background = new SolidColorBrush(Color.Parse("#2D1B69"));
+                SetBrush("WindowBackground", "#120A27");
+                SetBrush("CardBackground", "#1A0F3A");
+                SetBrush("SectionBackground", "#2D1B69");
+                SetBrush("SubtleText", "#BDAFF6");
+                SetBrush("AccentColor", "#8B5CF6");
+                SetBrushObj("PrimaryText", Brushes.White);
+                SetBrush("ControlBorder", "#3A2550");
+                SetBrush("CardBorder", "#24143A");
+                SetBrush("MutedButtonBackground", "#3A2550");
                 break;
 
+            // Emerald
             case 3:
-                Background = new SolidColorBrush(Color.Parse("#064E3B"));
+                SetBrush("WindowBackground", "#052020");
+                SetBrush("CardBackground", "#063634");
+                SetBrush("SectionBackground", "#064E3B");
+                SetBrush("SubtleText", "#9BD6C6");
+                SetBrush("AccentColor", "#10B981");
+                SetBrushObj("PrimaryText", Brushes.White);
+                SetBrush("ControlBorder", "#063F36");
+                SetBrush("CardBorder", "#042E28");
+                SetBrush("MutedButtonBackground", "#063F36");
                 break;
 
+            // Light Mode
             case 4:
-                Background = Brushes.White;
+                SetBrush("WindowBackground", "#FFFFFF");
+                SetBrush("CardBackground", "#F3F4F6");
+                SetBrush("SectionBackground", "#FFFFFF");
+                SetBrush("SubtleText", "#6B7280");
+                SetBrush("AccentColor", "#2563EB");
+                SetBrushObj("PrimaryText", new SolidColorBrush(ParseColor("#0F172A")));
+                SetBrush("ControlBorder", "#D1D5DB");
+                SetBrush("CardBorder", "#E5E7EB");
+                SetBrush("MutedButtonBackground", "#E5E7EB");
                 break;
         }
+
+        // Update window background to reflect resource change immediately
+        if (resources.TryGetValue("WindowBackground", out var winBg) && winBg is IBrush brush)
+        {
+            Background = brush;
+        }
+
+        // Force style refresh by rebuilding UI where applicable
+        BuildUI();
     }
 
     private void DeleteTask(TodoTask task, TodoCategory category)
