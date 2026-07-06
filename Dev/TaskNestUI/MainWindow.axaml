@@ -18,8 +18,8 @@
                 <TabItem.Header>
                     <TextBlock Text="Tasks" Foreground="{DynamicResource PrimaryText}" FontWeight="SemiBold"/>
                 </TabItem.Header>
-                <Grid ColumnDefinitions="2*,1*" Margin="0,8,0,0">
-                    <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,20,0">
+                <Grid Margin="0,8,0,0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Spacing="24">
                             <Border Classes="card">
                                 <StackPanel Spacing="18">
@@ -45,7 +45,7 @@
                             <Border Classes="card">
                                 <StackPanel Spacing="16">
                                     <TextBlock Text="Task categories" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-                                    <TextBlock Text="Use the panel to the right to add, rename, and manage categories with a clean layout." Foreground="{DynamicResource SubtleText}" FontSize="14"/>
+                                    <TextBlock Text="Manage categories and tasks in a clean, focused layout." Foreground="{DynamicResource SubtleText}" FontSize="14"/>
                                     <Border Background="{DynamicResource SectionBackground}" CornerRadius="16" Padding="18" MinHeight="320">
                                         <StackPanel Spacing="20">
                                             <StackPanel Orientation="Horizontal" Spacing="12">
@@ -61,33 +61,8 @@
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
-
-                    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
-                        <Border Classes="card" MinHeight="520">
-                            <StackPanel Spacing="18">
-                                <TextBlock Text="Focus panel" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-
-                                <Border Background="{DynamicResource SectionBackground}" CornerRadius="14" Padding="16">
-                                    <StackPanel Spacing="8">
-                                        <TextBlock Text="General category is your default workspace." Foreground="{DynamicResource SubtleText}" FontSize="13"/>
-                                        <TextBlock Text="Hover over a task to see action menus or right-click a category to add tasks quickly." Foreground="{DynamicResource SubtleText}" FontSize="13"/>
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Background="{DynamicResource SectionBackground}" CornerRadius="14" Padding="16">
-                                    <StackPanel Spacing="8">
-                                        <TextBlock Text="Pro tips" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-                                        <TextBlock Text="• Use categories to separate work from personal tasks." Foreground="{DynamicResource SubtleText}" FontSize="13"/>
-                                        <TextBlock Text="• Keep overdue tasks visible and resolve them first." Foreground="{DynamicResource SubtleText}" FontSize="13"/>
-                                        <TextBlock Text="• Use priority flags for urgent items." Foreground="{DynamicResource SubtleText}" FontSize="13"/>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </Border>
-                    </ScrollViewer>
                 </Grid>
             </TabItem>
-
             <TabItem>
                 <TabItem.Header>
                     <TextBlock Text="Guide" Foreground="{DynamicResource PrimaryText}" FontWeight="SemiBold"/>
