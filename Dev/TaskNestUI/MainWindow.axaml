@@ -23,7 +23,6 @@
                                FontSize="13" 
                                Foreground="{DynamicResource SubtleText}"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="🧪 HEADER TEST" Padding="12,8" Background="#FF0000" Click="OnHeaderTestBtn_Click"/>
             </Grid>
         </Border>
 
@@ -96,20 +95,7 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- TEST STATUS MESSAGE -->
-                        <Border Background="{DynamicResource SectionBackground}" 
-                                CornerRadius="8" 
-                                Padding="12,8"
-                                IsVisible="False"
-                                Name="TestStatusMessageBorder">
-                            <TextBlock Name="TestStatusMessage" 
-                                       FontSize="12" 
-                                       Foreground="{DynamicResource SuccessColor}"
-                                       TextWrapping="Wrap"/>
-                        </Border>
-
-                        <!-- TEST BUTTON -->
-                        <Button Name="TestBtn" Content="🧪 TEST BUTTON - Click Me" Padding="12,10" Background="#FF4444" Click="OnTestBtn_Click"/>
+                        <!-- Test UI removed in production build -->
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -301,7 +287,7 @@
                                                FontSize="13" 
                                                FontWeight="SemiBold" 
                                                Foreground="{DynamicResource PrimaryText}"/>
-                                    <ComboBox Name="TextSizeSelector" SelectedIndex="1">
+                                    <ComboBox Name="TextSizeSelector" SelectedIndex="1" SelectionChanged="OnTextSizeChanged">
                                         <ComboBoxItem Content="🔍 Small"/>
                                         <ComboBoxItem Content="📄 Normal (Current)"/>
                                         <ComboBoxItem Content="🔎 Large"/>
