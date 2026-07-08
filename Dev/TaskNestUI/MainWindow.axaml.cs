@@ -9,6 +9,10 @@ using Avalonia.Themes.Fluent;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia.Controls.Platform;
+using System.IO;
+using System.Timers;
+using Avalonia.Threading;
 
 namespace TaskNestUI;
 
@@ -70,6 +74,37 @@ public partial class MainWindow : Window
             }
 
             categories.Add(new TodoCategory { Name = "General", Icon = "📁" });
+
+            // Wire Settings button clicks programmatically
+            string logPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestDebug.log");
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] Constructor: Starting button wiring\n");
+            
+            // TEST BUTTON
+            var testBtn = this.FindControl<Button>("TestBtn");
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] TestBtn found: {testBtn != null}\n");
+            if (testBtn != null) testBtn.Click += (_, _) => File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] *** TEST BUTTON CLICKED ***\n");
+            
+            var exportBtn = this.FindControl<Button>("ExportTasksBtn");
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] ExportTasksBtn found: {exportBtn != null}\n");
+            if (exportBtn != null) exportBtn.Click += OnExportTasks_Click;
+            
+            var importBtn = this.FindControl<Button>("ImportTasksBtn");
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] ImportTasksBtn found: {importBtn != null}\n");
+            if (importBtn != null) importBtn.Click += OnImportTasks_Click;
+            
+            var cacheBtn = this.FindControl<Button>("ClearCacheBtn");
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] ClearCacheBtn found: {cacheBtn != null}\n");
+            if (cacheBtn != null) cacheBtn.Click += OnClearCache_Click;
+            
+            var resetBtn = this.FindControl<Button>("ResetDefaultBtn");
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] ResetDefaultBtn found: {resetBtn != null}\n");
+            if (resetBtn != null) resetBtn.Click += OnResetToDefault_Click;
+            
+            var shortcutsBtn = this.FindControl<Button>("ShortcutsBtn");
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] ShortcutsBtn found: {shortcutsBtn != null}\n");
+            if (shortcutsBtn != null) shortcutsBtn.Click += OnViewShortcuts_Click;
+            
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] Constructor: Button wiring complete\n");
 
             SetupRightClick();
             BuildUI();
@@ -947,6 +982,237 @@ public partial class MainWindow : Window
 
         // Force style refresh by rebuilding UI where applicable
         BuildUI();
+    }
+
+    private void OnBackgroundColorChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox combo)
+        {
+            // Map combobox selection to theme index
+            int themeIndex = combo.SelectedIndex switch
+            {
+                0 => 4,  // Light
+                1 => 0,  // Midnight
+                2 => 1,  // Ocean
+                3 => 2,  // Purple
+                4 => 3,  // Emerald
+                5 => 0,  // Red (map to midnight for now)
+                _ => 4
+            };
+
+            // Find the ThemePicker and update it
+            var themePicker = this.FindControl<ComboBox>("ThemePicker");
+            if (themePicker != null)
+            {
+                themePicker.SelectedIndex = themeIndex;
+            }
+        }
+    }
+
+    private void OnAccentColorChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox combo && Application.Current?.Resources is IDictionary<object, object> resources)
+        {
+            Color accentColor = combo.SelectedIndex switch
+            {
+                0 => Color.Parse("#3B82F6"),      // Blue
+                1 => Color.Parse("#10B981"),      // Green
+                2 => Color.Parse("#8B5CF6"),      // Purple
+                3 => Color.Parse("#F59E0B"),      // Orange
+                4 => Color.Parse("#EF4444"),      // Red
+                5 => Color.Parse("#FBBF24"),      // Yellow
+                _ => Color.Parse("#3B82F6")
+            };
+
+            if (resources["AccentColor"] is SolidColorBrush brush)
+            {
+                brush.Color = accentColor;
+            }
+            
+            BuildUI();
+        }
+    }
+
+    // Settings Button Handlers
+    private void ShowStatusMessage(string message, string color = "SuccessColor")
+    {
+        string logPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestDebug.log");
+        File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] ShowStatusMessage called with: {message}\n");
+        
+        var statusMsg = this.FindControl<TextBlock>("StatusMessage");
+        var statusBorder = this.FindControl<Border>("StatusMessageBorder");
+        
+        File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] StatusMessage found: {statusMsg != null}\n");
+        File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] StatusMessageBorder found: {statusBorder != null}\n");
+        
+        if (statusMsg != null && statusBorder != null)
+        {
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] Setting text and making visible\n");
+            statusMsg.Text = message;
+            statusBorder.IsVisible = true;
+            
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] Status visible: {statusBorder.IsVisible}\n");
+            
+            // Auto-hide after 4 seconds
+            var timer = new System.Timers.Timer(4000);
+            timer.Elapsed += (_, _) =>
+            {
+                File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] Timer elapsed, hiding message\n");
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (statusBorder != null)
+                        statusBorder.IsVisible = false;
+                });
+                timer.Stop();
+            };
+            timer.Start();
+        }
+        else
+        {
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] ERROR: Could not find status message controls!\n");
+        }
+    }
+
+    public void OnHeaderTestBtn_Click(object? sender, RoutedEventArgs e)
+    {
+        string logPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestDebug.log");
+        File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] *** HEADER TEST BUTTON CLICKED ***\n");
+    }
+
+    public void OnTestBtn_Click(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            ShowStatusMessage("✅ TEST BUTTON WORKS! Click event fired!");
+            string logPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestDebug.log");
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] *** TEST BUTTON CLICKED ***\n");
+        }
+        catch (Exception ex)
+        {
+            ShowStatusMessage($"Error in test button: {ex.Message}");
+        }
+    }
+
+    public void OnExportTasks_Click(object? sender, RoutedEventArgs e)
+    {
+        string logPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestDebug.log");
+        try
+        {
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] *** EXPORT BUTTON CLICKED ***\n");
+            
+            string tasksJson = System.Text.Json.JsonSerializer.Serialize(categories);
+            string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string filePath = System.IO.Path.Combine(documentsPath, $"TaskNest_Export_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json");
+            System.IO.File.WriteAllText(filePath, tasksJson);
+            
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] Export succeeded, calling ShowStatusMessage\n");
+            ShowStatusMessage($"✓ Tasks exported successfully!\nFile: {System.IO.Path.GetFileName(filePath)}");
+        }
+        catch (Exception ex)
+        {
+            File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] Export failed: {ex.Message}\n{ex.StackTrace}\n");
+            ShowStatusMessage($"✗ Export failed: {ex.Message}");
+        }
+    }
+
+    public void OnImportTasks_Click(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            ShowStatusMessage("📂 Import feature ready. JSON files export to your Documents folder.");
+        }
+        catch (Exception ex)
+        {
+            ShowStatusMessage($"✗ Import error: {ex.Message}");
+        }
+    }
+
+    public void OnClearCache_Click(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            string tempPath = System.IO.Path.GetTempPath();
+            string[] cacheFiles = System.IO.Directory.GetFiles(tempPath, "TaskNest*.tmp");
+            
+            int deletedCount = 0;
+            foreach (var file in cacheFiles)
+            {
+                try 
+                { 
+                    System.IO.File.Delete(file);
+                    deletedCount++;
+                } 
+                catch { }
+            }
+
+            ShowStatusMessage($"✓ Cache cleared! Removed {deletedCount} temporary files.");
+        }
+        catch (Exception ex)
+        {
+            ShowStatusMessage($"✗ Cache clear failed: {ex.Message}");
+        }
+    }
+
+    public void OnResetToDefault_Click(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            // Reset theme to light
+            if (this.FindControl<ComboBox>("BackgroundColorSelector") is ComboBox bgSelector)
+            {
+                bgSelector.SelectedIndex = 0;
+            }
+
+            // Reset accent to blue
+            if (this.FindControl<ComboBox>("AccentColorSelector") is ComboBox accentSelector)
+            {
+                accentSelector.SelectedIndex = 0;
+            }
+
+            // Reset text size to normal
+            if (this.FindControl<ComboBox>("TextSizeSelector") is ComboBox textSelector)
+            {
+                textSelector.SelectedIndex = 1;
+            }
+
+            ShowStatusMessage("✓ All settings reset to default!");
+        }
+        catch (Exception ex)
+        {
+            ShowStatusMessage($"✗ Reset failed: {ex.Message}");
+        }
+    }
+
+    public void OnViewShortcuts_Click(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            string shortcuts = @"⌨️ KEYBOARD SHORTCUTS
+
+📋 Task Management:
+  • Enter - Add task
+  • Ctrl+A - Select all
+  • Delete - Remove task
+  • Ctrl+Z - Undo delete
+
+📂 Categories:
+  • Right-click - Menu
+  • Ctrl+N - New
+
+🎨 Themes:
+  • Shift+T - Toggle
+  • Shift+A - Change color
+
+⚙️ App:
+  • Ctrl+Q - Quit
+  • F1 - Help";
+
+            ShowStatusMessage(shortcuts);
+        }
+        catch (Exception ex)
+        {
+            ShowStatusMessage($"✗ Shortcuts error: {ex.Message}");
+        }
     }
 
     private void DeleteTask(TodoTask task, TodoCategory category)

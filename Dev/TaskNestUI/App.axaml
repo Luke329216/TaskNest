@@ -9,70 +9,61 @@
         <Style Selector="TabControl">
             <Setter Property="Background" Value="{DynamicResource SectionBackground}"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Padding" Value="14"/>
-            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="CornerRadius" Value="0"/>
         </Style>
 
         <Style Selector="TabItem">
-            <Setter Property="Padding" Value="14,10"/>
-            <Setter Property="Margin" Value="0,0,10,0"/>
-            <Setter Property="Background" Value="{DynamicResource CardBackground}"/>
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource SubtleText}"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderThickness" Value="0,2"/>
+            <Setter Property="CornerRadius" Value="0"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
         </Style>
 
         <Style Selector="TabItem:is-selected">
-            <Setter Property="Background" Value="{DynamicResource AccentColor}"/>
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource AccentColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}"/>
         </Style>
-        <Style Selector="TabItem > ContentPresenter">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
-        </Style>
-        <Style Selector="TabItem:pointerover > ContentPresenter">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
-        </Style>
-        <Style Selector="TabItem:is-selected > ContentPresenter">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
-        </Style>
-        <Style Selector="TabItem:selected > ContentPresenter">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
-        </Style>
-        <!-- Ensure header TextBlock inside TabItem doesn't turn white on hover -->
+
         <Style Selector="TabItem TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+            <Setter Property="Foreground" Value="{DynamicResource SubtleText}"/>
         </Style>
-        <Style Selector="TabItem:pointerover TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
-        </Style>
+
         <Style Selector="TabItem:is-selected TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AccentColor}"/>
         </Style>
-        <Style Selector="TabItem:selected TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
-        </Style>
-        <Style Selector="TabItem:pointerover">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
-        </Style>
-        <Style Selector="TabItem:is-selected:pointerover">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
-        </Style>
-        <Style Selector="TabItem:selected:pointerover">
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
-        </Style>
-        <Style Selector="TabItem:selected">
-            <Setter Property="Background" Value="{DynamicResource AccentColor}"/>
+
+        <Style Selector="TabItem:pointerover TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
         </Style>
 
         <Style Selector="Button">
             <Setter Property="Background" Value="{DynamicResource AccentColor}"/>
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="CornerRadius" Value="10"/>
-            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="14,10"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AccentHover}"/>
+        </Style>
+
+        <Style Selector="Button:pressed">
+            <Setter Property="Opacity" Value="0.85"/>
         </Style>
 
         <Style Selector="Button:disabled">
@@ -80,21 +71,35 @@
         </Style>
 
         <Style Selector="TextBox">
-            <Setter Property="Background" Value="{DynamicResource SectionBackground}"/>
+            <Setter Property="Background" Value="{DynamicResource CardBackground}"/>
             <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ControlBorder}"/>
-            <Setter Property="CaretBrush" Value="{DynamicResource PrimaryText}"/>
-            <Setter Property="CornerRadius" Value="10"/>
-            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource AccentColor}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12,10"/>
             <Setter Property="MinHeight" Value="44"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style Selector="TextBox:focus">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}"/>
+            <Setter Property="BorderThickness" Value="2"/>
         </Style>
 
         <Style Selector="ComboBox">
-            <Setter Property="Background" Value="{DynamicResource SectionBackground}"/>
+            <Setter Property="Background" Value="{DynamicResource CardBackground}"/>
             <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ControlBorder}"/>
-            <Setter Property="CornerRadius" Value="10"/>
-            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style Selector="ComboBox:focus">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}"/>
+            <Setter Property="BorderThickness" Value="2"/>
         </Style>
 
         <Style Selector="ScrollViewer">
@@ -103,22 +108,41 @@
 
         <Style Selector="Border.card">
             <Setter Property="Background" Value="{DynamicResource CardBackground}"/>
-            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="CornerRadius" Value="12"/>
             <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="24"/>
         </Style>
+
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        </Style>
+
+        <Style Selector="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+            <Setter Property="Padding" Value="8,8"/>
+        </Style>
+
+        <Style Selector="ComboBoxItem">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+            <Setter Property="Background" Value="{DynamicResource CardBackground}"/>
+        </Style>
     </Application.Styles>
 
     <Application.Resources>
-        <SolidColorBrush x:Key="WindowBackground">#090E1F</SolidColorBrush>
-        <SolidColorBrush x:Key="CardBackground">#111827</SolidColorBrush>
-        <SolidColorBrush x:Key="SectionBackground">#0F172A</SolidColorBrush>
-        <SolidColorBrush x:Key="SubtleText">#94A3B8</SolidColorBrush>
-        <SolidColorBrush x:Key="AccentColor">#2563EB</SolidColorBrush>
-        <SolidColorBrush x:Key="PrimaryText">White</SolidColorBrush>
-        <SolidColorBrush x:Key="ControlBorder">#334155</SolidColorBrush>
-        <SolidColorBrush x:Key="CardBorder">#1E293B</SolidColorBrush>
-        <SolidColorBrush x:Key="MutedButtonBackground">#334155</SolidColorBrush>
+        <!-- Primary Colors -->
+        <SolidColorBrush x:Key="WindowBackground">#F8FAFC</SolidColorBrush>
+        <SolidColorBrush x:Key="CardBackground">#FFFFFF</SolidColorBrush>
+        <SolidColorBrush x:Key="SectionBackground">#F1F5F9</SolidColorBrush>
+        <SolidColorBrush x:Key="SubtleText">#64748B</SolidColorBrush>
+        <SolidColorBrush x:Key="AccentColor">#3B82F6</SolidColorBrush>
+        <SolidColorBrush x:Key="AccentHover">#1D4ED8</SolidColorBrush>
+        <SolidColorBrush x:Key="PrimaryText">#0F172A</SolidColorBrush>
+        <SolidColorBrush x:Key="ControlBorder">#E2E8F0</SolidColorBrush>
+        <SolidColorBrush x:Key="CardBorder">#CBD5E1</SolidColorBrush>
+        <SolidColorBrush x:Key="MutedButtonBackground">#E2E8F0</SolidColorBrush>
+        <SolidColorBrush x:Key="SuccessColor">#10B981</SolidColorBrush>
+        <SolidColorBrush x:Key="WarningColor">#F59E0B</SolidColorBrush>
+        <SolidColorBrush x:Key="DangerColor">#EF4444</SolidColorBrush>
     </Application.Resources>
 </Application>
