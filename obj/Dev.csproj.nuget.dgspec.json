@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Work\\Repository\\TaskNest\\Dev.csproj": {}
+    "C:\\Work\\Respitory\\TaskNest\\Dev.csproj": {}
   },
   "projects": {
-    "C:\\Work\\Repository\\TaskNest\\Dev.csproj": {
+    "C:\\Work\\Respitory\\TaskNest\\Dev.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Work\\Repository\\TaskNest\\Dev.csproj",
+        "projectUniqueName": "C:\\Work\\Respitory\\TaskNest\\Dev.csproj",
         "projectName": "Dev",
-        "projectPath": "C:\\Work\\Repository\\TaskNest\\Dev.csproj",
-        "packagesPath": "C:\\Users\\lucas\\.nuget\\packages\\",
-        "outputPath": "C:\\Work\\Repository\\TaskNest\\obj\\",
+        "projectPath": "C:\\Work\\Respitory\\TaskNest\\Dev.csproj",
+        "packagesPath": "C:\\Users\\GJLEO\\.nuget\\packages\\",
+        "outputPath": "C:\\Work\\Respitory\\TaskNest\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\GJLEO\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
