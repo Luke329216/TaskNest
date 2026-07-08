@@ -1,142 +1,412 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="TaskNestUI.MainWindow"
-        Width="1300"
-        Height="860"
-        Title="TaskNest"
+        Width="1400"
+        Height="900"
+        Title="TaskNest - Professional Task Management"
         Background="{DynamicResource WindowBackground}">
 
+    <DockPanel>
+        <!-- Header Section -->
+        <Border DockPanel.Dock="Top" 
+                Background="{DynamicResource CardBackground}" 
+                BorderBrush="{DynamicResource CardBorder}" 
+                BorderThickness="0,0,0,1" 
+                Padding="32,24">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="4" Grid.Column="0">
+                    <TextBlock Text="TaskNest" 
+                               FontSize="28" 
+                               FontWeight="Bold" 
+                               Foreground="{DynamicResource AccentColor}"/>
+                    <TextBlock Text="Organize your work with powerful task management" 
+                               FontSize="13" 
+                               Foreground="{DynamicResource SubtleText}"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="🧪 HEADER TEST" Padding="12,8" Background="#FF0000" Click="OnHeaderTestBtn_Click"/>
+            </Grid>
+        </Border>
 
-    <Grid RowDefinitions="Auto,*" Margin="20">
-        <StackPanel Orientation="Vertical" Spacing="8">
-            <TextBlock Text="TaskNest" FontSize="34" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-            <TextBlock Text="A modern productivity workspace for tasks and categories." FontSize="15" Foreground="{DynamicResource SubtleText}"/>
-        </StackPanel>
-
-        <TabControl Name="MainTabs" Grid.Row="1" TabStripPlacement="Top" Margin="0,20,0,0">
+        <!-- Main Content -->
+        <TabControl Name="MainTabs" 
+                    TabStripPlacement="Top" 
+                    Background="{DynamicResource WindowBackground}"
+                    Padding="0">
+            <!-- Tasks Tab -->
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="Tasks" Foreground="{DynamicResource PrimaryText}" FontWeight="SemiBold"/>
+                    <TextBlock Text="📋 Tasks" FontSize="14"/>
                 </TabItem.Header>
-                <Grid Margin="0,8,0,0">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Spacing="24">
-                            <Border Classes="card">
-                                <StackPanel Spacing="18">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Spacing="8">
-                                            <TextBlock Text="TaskNest dashboard" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-                                            <TextBlock Text="Everything you need to create tasks, organize categories, and move faster." Foreground="{DynamicResource SubtleText}" FontSize="14"/>
-                                        </StackPanel>
-                                        <Border Background="{DynamicResource AccentColor}" CornerRadius="12" Padding="10,6" Grid.Column="1" VerticalAlignment="Top">
-                                            <TextBlock Text="Professional" Foreground="{DynamicResource PrimaryText}" FontWeight="SemiBold"/>
-                                        </Border>
-                                    </Grid>
-
-                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" VerticalAlignment="Center">
-                                        <TextBox Name="TaskInput" PlaceholderText="Add a new task…" />
-                                        <Button Grid.Column="1" Content="Add Task" Click="AddTaskToGeneral_Click" MinWidth="140"/>
-                                    </Grid>
-
-                                    <Button Content="Undo Last Delete" Click="Undo_Click" HorizontalAlignment="Left" Width="180" Background="{DynamicResource MutedButtonBackground}"/>
-                                </StackPanel>
-                            </Border>
-
-                            <Border Classes="card">
-                                <StackPanel Spacing="16">
-                                    <TextBlock Text="Task categories" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-                                    <TextBlock Text="Manage categories and tasks in a clean, focused layout." Foreground="{DynamicResource SubtleText}" FontSize="14"/>
-                                    <Border Background="{DynamicResource SectionBackground}" CornerRadius="16" Padding="18" MinHeight="320">
-                                        <StackPanel Spacing="20">
-                                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <TextBlock Text="Categories" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}"/>
-                                                <TextBlock Text="Right-click a category for quick actions." Foreground="{DynamicResource SubtleText}" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                            <Border Name="CategoryContainer" Background="{DynamicResource SectionBackground}" CornerRadius="14" Padding="16">
-                                                <StackPanel x:Name="CategoryPanel" Spacing="16"/>
-                                            </Border>
-                                        </StackPanel>
-                                    </Border>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </TabItem>
-            <TabItem>
-                <TabItem.Header>
-                    <TextBlock Text="Guide" Foreground="{DynamicResource PrimaryText}" FontWeight="SemiBold"/>
-                </TabItem.Header>
-                <Grid Background="{DynamicResource WindowBackground}" Margin="0,8,0,0">
-                    <ScrollViewer>
-                        <StackPanel Margin="50" Spacing="24">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{DynamicResource WindowBackground}">
+                    <StackPanel Spacing="20" Margin="32,24,32,32">
+                        <!-- Create Task Card -->
+                        <Border Classes="card">
+                            <StackPanel Spacing="16">
                                 <StackPanel Spacing="8">
-                                <TextBlock Text="Welcome to TaskNest" FontSize="34" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-                                <TextBlock Text="A polished task workspace designed for clarity and speed." FontSize="16" Foreground="{DynamicResource SubtleText}"/>
-                            </StackPanel>
+                                    <TextBlock Text="Create Task" 
+                                               FontSize="18" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource PrimaryText}"/>
+                                    <TextBlock Text="Add a new task to your workspace" 
+                                               FontSize="12" 
+                                               Foreground="{DynamicResource SubtleText}"/>
+                                </StackPanel>
 
-                            <StackPanel Orientation="Vertical" Spacing="24">
-                                <Border Classes="card">
-                                    <StackPanel Spacing="12">
-                                        <TextBlock Text="Getting Started" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-                                        <TextBlock Text="1. Create categories." Foreground="{DynamicResource PrimaryText}"/>
-                                        <TextBlock Text="2. Add tasks." Foreground="{DynamicResource PrimaryText}"/>
-                                        <TextBlock Text="3. Organize work with priority and due dates." Foreground="{DynamicResource PrimaryText}"/>
-                                        <TextBlock Text="4. Track progress and stay focused." Foreground="{DynamicResource PrimaryText}"/>
-                                    </StackPanel>
-                                </Border>
-                                <Border Classes="card">
-                                    <StackPanel Spacing="12">
-                                        <TextBlock Text="Productivity Tips" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-                                        <TextBlock Text="• Break large tasks into smaller steps." Foreground="{DynamicResource PrimaryText}"/>
-                                        <TextBlock Text="• Keep your active list concise." Foreground="{DynamicResource PrimaryText}"/>
-                                        <TextBlock Text="• Use categories to separate contexts." Foreground="{DynamicResource PrimaryText}"/>
-                                    </StackPanel>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" RowSpacing="12">
+                                    <TextBox Name="TaskInput" 
+                                             PlaceholderText="Enter task description…" 
+                                             Grid.Column="0"/>
+                                    <Button Grid.Column="1" 
+                                            Content="Add Task" 
+                                            Click="AddTaskToGeneral_Click" 
+                                            MinWidth="120"
+                                            Padding="14,10"/>
+                                </Grid>
+
+                                <Button Content="↶ Undo Last Delete" 
+                                        Click="Undo_Click" 
+                                        HorizontalAlignment="Left"
+                                        Background="{DynamicResource MutedButtonBackground}"
+                                        Foreground="{DynamicResource SubtleText}"
+                                        Padding="12,8"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Categories Card -->
+                        <Border Classes="card">
+                            <StackPanel Spacing="16">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Categories" 
+                                               FontSize="18" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource PrimaryText}"/>
+                                    <TextBlock Text="Organize your tasks by category • Right-click for quick actions" 
+                                               FontSize="12" 
+                                               Foreground="{DynamicResource SubtleText}"/>
+                                </StackPanel>
+                                <Border Background="{DynamicResource SectionBackground}" 
+                                        CornerRadius="8" 
+                                        Padding="16" 
+                                        MinHeight="300">
+                                    <Border Name="CategoryContainer" 
+                                            CornerRadius="8">
+                                        <StackPanel x:Name="CategoryPanel" Spacing="12"/>
+                                    </Border>
                                 </Border>
                             </StackPanel>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
+                        </Border>
+
+                        <!-- TEST STATUS MESSAGE -->
+                        <Border Background="{DynamicResource SectionBackground}" 
+                                CornerRadius="8" 
+                                Padding="12,8"
+                                IsVisible="False"
+                                Name="TestStatusMessageBorder">
+                            <TextBlock Name="TestStatusMessage" 
+                                       FontSize="12" 
+                                       Foreground="{DynamicResource SuccessColor}"
+                                       TextWrapping="Wrap"/>
+                        </Border>
+
+                        <!-- TEST BUTTON -->
+                        <Button Name="TestBtn" Content="🧪 TEST BUTTON - Click Me" Padding="12,10" Background="#FF4444" Click="OnTestBtn_Click"/>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
 
+            <!-- Guide Tab -->
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="Settings" Foreground="{DynamicResource PrimaryText}" FontWeight="SemiBold"/>
+                    <TextBlock Text="📖 Guide" FontSize="14"/>
                 </TabItem.Header>
-                <Grid Background="{DynamicResource WindowBackground}" Margin="0,8,0,0">
-                    <ScrollViewer>
-                        <StackPanel Margin="50" Spacing="24">
-                            <Border Classes="card">
-                                <StackPanel Spacing="16">
-                                    <TextBlock Text="Settings" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-                                    <TextBlock Text="Choose a workspace style and review app details." Foreground="{DynamicResource SubtleText}"/>
-                                    <Border Background="{DynamicResource SectionBackground}" CornerRadius="16" Padding="20">
-                                        <StackPanel Spacing="14">
-                                            <TextBlock Text="Theme" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}"/>
-                                            <TextBlock Text="Select the color style for the app." Foreground="{DynamicResource SubtleText}"/>
-                                            <ComboBox Name="ThemePicker" SelectedIndex="0">
-                                                <ComboBoxItem Content="🌑 Midnight"/>
-                                                <ComboBoxItem Content="🌊 Ocean Blue"/>
-                                                <ComboBoxItem Content="🌌 Purple Night"/>
-                                                <ComboBoxItem Content="🌲 Emerald"/>
-                                                <ComboBoxItem Content="☀ Light Mode"/>
-                                            </ComboBox>
-                                        </StackPanel>
-                                    </Border>
-                                </StackPanel>
-                            </Border>
+                <ScrollViewer Background="{DynamicResource WindowBackground}">
+                    <StackPanel Margin="32,24,32,32" Spacing="20">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Welcome to TaskNest" 
+                                       FontSize="28" 
+                                       FontWeight="Bold" 
+                                       Foreground="{DynamicResource PrimaryText}"/>
+                            <TextBlock Text="A powerful task management solution designed for productivity" 
+                                       FontSize="14" 
+                                       Foreground="{DynamicResource SubtleText}"/>
+                        </StackPanel>
+
+                        <StackPanel Spacing="16">
+                            <!-- Getting Started Card -->
                             <Border Classes="card">
                                 <StackPanel Spacing="12">
-                                    <TextBlock Text="About TaskNest" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}"/>
-                                    <TextBlock Text="Version 2.0" Foreground="{DynamicResource PrimaryText}"/>
-                                    <TextBlock Text="Built with Avalonia UI" Foreground="{DynamicResource SubtleText}"/>
-                                    <TextBlock Text="TaskNest helps you organize tasks, categories and productivity in one place." Foreground="{DynamicResource SubtleText}" TextWrapping="Wrap"/>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="🚀 Getting Started" 
+                                                   FontSize="16" 
+                                                   FontWeight="Bold" 
+                                                   Foreground="{DynamicResource PrimaryText}"/>
+                                        <TextBlock Text="Follow these steps to get organized" 
+                                                   FontSize="12" 
+                                                   Foreground="{DynamicResource SubtleText}"/>
+                                    </StackPanel>
+                                    <StackPanel Spacing="8" Margin="0,8,0,0">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="1. Create categories" 
+                                                       FontSize="13" 
+                                                       Foreground="{DynamicResource PrimaryText}"/>
+                                            <TextBlock Text="Organize your work by grouping similar tasks" 
+                                                       FontSize="12" 
+                                                       Foreground="{DynamicResource SubtleText}"/>
+                                        </StackPanel>
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="2. Add tasks" 
+                                                       FontSize="13" 
+                                                       Foreground="{DynamicResource PrimaryText}"/>
+                                            <TextBlock Text="Input tasks directly or organize by category" 
+                                                       FontSize="12" 
+                                                       Foreground="{DynamicResource SubtleText}"/>
+                                        </StackPanel>
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="3. Set priorities" 
+                                                       FontSize="13" 
+                                                       Foreground="{DynamicResource PrimaryText}"/>
+                                            <TextBlock Text="Mark important tasks to focus on what matters" 
+                                                       FontSize="12" 
+                                                       Foreground="{DynamicResource SubtleText}"/>
+                                        </StackPanel>
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="4. Track progress" 
+                                                       FontSize="13" 
+                                                       Foreground="{DynamicResource PrimaryText}"/>
+                                            <TextBlock Text="Stay focused and maintain productivity" 
+                                                       FontSize="12" 
+                                                       Foreground="{DynamicResource SubtleText}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Productivity Tips Card -->
+                            <Border Classes="card">
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="💡 Productivity Tips" 
+                                                   FontSize="16" 
+                                                   FontWeight="Bold" 
+                                                   Foreground="{DynamicResource PrimaryText}"/>
+                                        <TextBlock Text="Best practices for maximum efficiency" 
+                                                   FontSize="12" 
+                                                   Foreground="{DynamicResource SubtleText}"/>
+                                    </StackPanel>
+                                    <StackPanel Spacing="8" Margin="0,8,0,0">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="✓ Break down large tasks" 
+                                                       FontSize="13" 
+                                                       Foreground="{DynamicResource PrimaryText}"/>
+                                            <TextBlock Text="Smaller tasks feel more achievable and boost motivation" 
+                                                       FontSize="12" 
+                                                       Foreground="{DynamicResource SubtleText}"/>
+                                        </StackPanel>
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="✓ Keep active list concise" 
+                                                       FontSize="13" 
+                                                       Foreground="{DynamicResource PrimaryText}"/>
+                                            <TextBlock Text="Focus on today's priorities instead of everything" 
+                                                       FontSize="12" 
+                                                       Foreground="{DynamicResource SubtleText}"/>
+                                        </StackPanel>
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="✓ Use categories strategically" 
+                                                       FontSize="13" 
+                                                       Foreground="{DynamicResource PrimaryText}"/>
+                                            <TextBlock Text="Group related tasks by context or project" 
+                                                       FontSize="12" 
+                                                       Foreground="{DynamicResource SubtleText}"/>
+                                        </StackPanel>
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
-                    </ScrollViewer>
-                </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Settings Tab -->
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="⚙️ Settings" FontSize="14"/>
+                </TabItem.Header>
+                <ScrollViewer Background="{DynamicResource WindowBackground}">
+                    <StackPanel Margin="32,24,32,32" Spacing="20">
+                        <!-- Settings Header -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Settings &amp; Customization" 
+                                       FontSize="28" 
+                                       FontWeight="Bold" 
+                                       Foreground="{DynamicResource PrimaryText}"/>
+                            <TextBlock Text="Personalize your TaskNest experience" 
+                                       FontSize="14" 
+                                       Foreground="{DynamicResource SubtleText}"/>
+                        </StackPanel>
+
+                        <!-- Display Settings Card -->
+                        <Border Classes="card">
+                            <StackPanel Spacing="16">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="🎨 Display Settings" 
+                                               FontSize="18" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource PrimaryText}"/>
+                                    <TextBlock Text="Customize your interface appearance" 
+                                               FontSize="12" 
+                                               Foreground="{DynamicResource SubtleText}"/>
+                                </StackPanel>
+
+                                <!-- Background Color -->
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Background Color" 
+                                               FontSize="13" 
+                                               FontWeight="SemiBold" 
+                                               Foreground="{DynamicResource PrimaryText}"/>
+                                    <ComboBox Name="BackgroundColorSelector" SelectionChanged="OnBackgroundColorChanged">
+                                        <ComboBoxItem Content="☀️ Light (Current)"/>
+                                        <ComboBoxItem Content="🌑 Midnight Dark"/>
+                                        <ComboBoxItem Content="🌊 Ocean Blue"/>
+                                        <ComboBoxItem Content="🌌 Purple Night"/>
+                                        <ComboBoxItem Content="🌲 Emerald Green"/>
+                                        <ComboBoxItem Content="🔴 Red Accent"/>
+                                    </ComboBox>
+                                    <TextBlock Text="Select a background theme to customize your workspace" 
+                                               FontSize="11" 
+                                               Foreground="{DynamicResource SubtleText}"/>
+                                </StackPanel>
+
+                                <!-- Accent Color -->
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Accent Color" 
+                                               FontSize="13" 
+                                               FontWeight="SemiBold" 
+                                               Foreground="{DynamicResource PrimaryText}"/>
+                                    <ComboBox Name="AccentColorSelector" SelectionChanged="OnAccentColorChanged">
+                                        <ComboBoxItem Content="🔵 Blue (Current)"/>
+                                        <ComboBoxItem Content="🟢 Green"/>
+                                        <ComboBoxItem Content="🟣 Purple"/>
+                                        <ComboBoxItem Content="🟠 Orange"/>
+                                        <ComboBoxItem Content="🔴 Red"/>
+                                        <ComboBoxItem Content="🟡 Yellow"/>
+                                    </ComboBox>
+                                    <TextBlock Text="Choose your preferred accent color for highlights and buttons" 
+                                               FontSize="11" 
+                                               Foreground="{DynamicResource SubtleText}"/>
+                                </StackPanel>
+
+                                <!-- Text Size -->
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Text Size" 
+                                               FontSize="13" 
+                                               FontWeight="SemiBold" 
+                                               Foreground="{DynamicResource PrimaryText}"/>
+                                    <ComboBox Name="TextSizeSelector" SelectedIndex="1">
+                                        <ComboBoxItem Content="🔍 Small"/>
+                                        <ComboBoxItem Content="📄 Normal (Current)"/>
+                                        <ComboBoxItem Content="🔎 Large"/>
+                                        <ComboBoxItem Content="🔎🔎 Extra Large"/>
+                                    </ComboBox>
+                                    <TextBlock Text="Adjust overall text size for better readability" 
+                                               FontSize="11" 
+                                               Foreground="{DynamicResource SubtleText}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Tools Card -->
+                        <Border Classes="card">
+                            <StackPanel Spacing="16">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="🛠️ Tools &amp; Actions" 
+                                               FontSize="18" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource PrimaryText}"/>
+                                    <TextBlock Text="Manage your data and preferences" 
+                                               FontSize="12" 
+                                               Foreground="{DynamicResource SubtleText}"/>
+                                </StackPanel>
+
+                                <!-- Status Message -->
+                                <Border Background="{DynamicResource SectionBackground}" 
+                                        CornerRadius="8" 
+                                        Padding="12,8"
+                                        IsVisible="False"
+                                        Name="StatusMessageBorder">
+                                    <TextBlock Name="StatusMessage" 
+                                               FontSize="12" 
+                                               Foreground="{DynamicResource SuccessColor}"
+                                               TextWrapping="Wrap"/>
+                                </Border>
+
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                    <Button Name="ExportTasksBtn" Grid.Column="0" Content="📥 Export Tasks" Padding="12,10" Click="OnExportTasks_Click"/>
+                                    <Button Name="ImportTasksBtn" Grid.Column="1" Content="📤 Import Tasks" Padding="12,10" Click="OnImportTasks_Click"/>
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                    <Button Name="ClearCacheBtn" Grid.Column="0" Content="🔄 Clear Cache" Padding="12,10" Click="OnClearCache_Click"/>
+                                    <Button Name="ResetDefaultBtn" Grid.Column="1" Content="⚡ Reset to Default" Padding="12,10" Click="OnResetToDefault_Click"/>
+                                </Grid>
+
+                                <Button Name="ShortcutsBtn" Content="📋 View Shortcuts" Padding="12,10" HorizontalAlignment="Stretch" Click="OnViewShortcuts_Click"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Notifications Card -->
+                        <Border Classes="card">
+                            <StackPanel Spacing="16">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="🔔 Notifications" 
+                                               FontSize="18" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource PrimaryText}"/>
+                                    <TextBlock Text="Control how you receive updates" 
+                                               FontSize="12" 
+                                               Foreground="{DynamicResource SubtleText}"/>
+                                </StackPanel>
+
+                                <CheckBox Content="Enable desktop notifications" IsChecked="True" Padding="8,4"/>
+                                <CheckBox Content="Notify for overdue tasks" IsChecked="True" Padding="8,4"/>
+                                <CheckBox Content="Daily summary email" IsChecked="False" Padding="8,4"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- About Card -->
+                        <Border Classes="card">
+                            <StackPanel Spacing="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="ℹ️ About TaskNest" 
+                                               FontSize="18" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource PrimaryText}"/>
+                                </StackPanel>
+
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="100,*">
+                                        <TextBlock Text="Version:" Foreground="{DynamicResource SubtleText}" FontWeight="SemiBold"/>
+                                        <TextBlock Grid.Column="1" Text="2.0 (Professional)" Foreground="{DynamicResource PrimaryText}"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="100,*">
+                                        <TextBlock Text="Built with:" Foreground="{DynamicResource SubtleText}" FontWeight="SemiBold"/>
+                                        <TextBlock Grid.Column="1" Text="Avalonia UI &amp; .NET 10" Foreground="{DynamicResource PrimaryText}"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="100,*">
+                                        <TextBlock Text="Status:" Foreground="{DynamicResource SubtleText}" FontWeight="SemiBold"/>
+                                        <TextBlock Grid.Column="1" Text="✓ Active &amp; Updated" Foreground="{DynamicResource SuccessColor}"/>
+                                    </Grid>
+                                </StackPanel>
+
+                                <TextBlock Text="TaskNest is your personal task management companion, designed to help you organize, prioritize, and accomplish your goals with ease." 
+                                           Foreground="{DynamicResource SubtleText}" 
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
-    </Grid>
+    </DockPanel>
 </Window>
