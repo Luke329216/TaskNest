@@ -25,6 +25,8 @@ public partial class MainWindow : Window
     private string inlineAction = "";
     private TodoCategory? inlineCategory = null;
     private TextBox? inputToFocus = null;
+    private double fontScale = 1.0;
+    private double S(double v) => v * fontScale;
 
     public MainWindow()
     {
@@ -74,6 +76,13 @@ public partial class MainWindow : Window
             }
 
             categories.Add(new TodoCategory { Name = "General", Icon = "📁" });
+
+            // Apply initial theme based on BackgroundColorSelector if present
+            var bgSelector = this.FindControl<ComboBox>("BackgroundColorSelector");
+            if (bgSelector != null && bgSelector.SelectedIndex >= 0)
+            {
+                ApplyThemeByIndex(bgSelector.SelectedIndex);
+            }
 
             // Wire Settings button clicks programmatically
             string logPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestDebug.log");
@@ -175,6 +184,7 @@ public partial class MainWindow : Window
 
     private void BuildUI()
     {
+        // Use class-level S(double) for consistent scaling across methods
         var panel = this.FindControl<StackPanel>("CategoryPanel");
         if (panel == null) return;
 
@@ -208,7 +218,7 @@ public partial class MainWindow : Window
             headerRow.Children.Add(new TextBlock
             {
                 Text = category.Icon,
-                FontSize = 22,
+                FontSize = S(22),
                 Margin = new Avalonia.Thickness(0, -2, 0, 0)
             });
 
@@ -235,24 +245,22 @@ public partial class MainWindow : Window
             {
                 Text = $"{(int)(progressPercent * 100)}% Complete",
                 Foreground = Application.Current?.Resources["SubtleText"] as IBrush ?? Brushes.LightGray,
-                FontSize = 11
+                FontSize = S(11)
             });
+            var isExpanded = expandedCategories.Contains(category);
 
-            // Use a header border so the header area uses SectionBackground (white in Light Mode)
+            var contentPanel = new StackPanel { Spacing = 8 };
+
+            // Create header grid and border so we can control header layout/background
+            var headerGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+            headerGrid.Children.Add(headerStack);
+
             var headerBorder = new Border
             {
                 Background = Application.Current?.Resources["SectionBackground"] as IBrush,
                 Padding = new Avalonia.Thickness(8,6,8,6)
             };
             headerBorder.CornerRadius = new CornerRadius(12,12,0,0);
-
-            // Create header grid with left content and right toggle so we control both areas' backgrounds
-            var headerGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
-            headerGrid.Children.Add(headerStack);
-
-            var isExpanded = expandedCategories.Contains(category);
-
-            var contentPanel = new StackPanel { Spacing = 8 };
 
             var toggleBtn = new Button
             {
@@ -344,15 +352,15 @@ public partial class MainWindow : Window
 
             var taskStack = new StackPanel { Spacing = 5 };
 
-            if (inlineAction == "AddTask" && inlineCategory == category)
+                if (inlineAction == "AddTask" && inlineCategory == category)
             {
                 taskStack.Children.Add(CreateInlineInput(category));
             }
 
             foreach (var task in category.Tasks.ToList())
-            {
-                taskStack.Children.Add(CreateTaskRow(task, category));
-            }
+                {
+                    taskStack.Children.Add(CreateTaskRow(task, category));
+                }
 
             mainStack.Children.Add(taskStack);
 
@@ -715,7 +723,7 @@ public partial class MainWindow : Window
         topRow.Children.Add(new TextBlock
         {
             Text = task.Icon,
-            FontSize = 18,
+            FontSize = S(18),
             Width = 24,
             VerticalAlignment = VerticalAlignment.Center
         });
@@ -723,7 +731,7 @@ public partial class MainWindow : Window
         topRow.Children.Add(new TextBlock
         {
             Text = task.Text,
-            FontSize = 15,
+            FontSize = S(15),
             Foreground = GetPriorityBrushLocal(task.Priority),
             TextWrapping = TextWrapping.Wrap,
             VerticalAlignment = VerticalAlignment.Center
@@ -742,7 +750,7 @@ public partial class MainWindow : Window
         {
             Text = task.Priority == TaskPriority.None ? "Normal" : task.Priority.ToString(),
             Foreground = Application.Current?.Resources["SubtleText"] as IBrush ?? Brushes.LightGray,
-            FontSize = 12
+            FontSize = S(12)
         });
 
         if (task.DueDate.HasValue)
@@ -754,7 +762,7 @@ public partial class MainWindow : Window
             {
                 Text = display,
                 Foreground = due < DateTime.Today ? Brushes.Red : Application.Current?.Resources["SubtleText"] as IBrush ?? Brushes.LightGray,
-                FontSize = 12
+                FontSize = S(12)
             });
         }
 
@@ -876,10 +884,14 @@ public partial class MainWindow : Window
     {
         if (sender is not ComboBox combo)
             return;
+        ApplyThemeByIndex(combo.SelectedIndex);
+    }
+
+    private void ApplyThemeByIndex(int index)
+    {
         var resources = Application.Current?.Resources;
         if (resources == null) return;
 
-        // Define palettes for each theme index. Update application resources so styles update across the app.
         Color ParseColor(string hex) => Color.Parse(hex);
 
         void SetBrush(string key, string hex)
@@ -906,7 +918,7 @@ public partial class MainWindow : Window
             }
         }
 
-        switch (combo.SelectedIndex)
+        switch (index)
         {
             // Midnight
             case 0:
@@ -1000,12 +1012,8 @@ public partial class MainWindow : Window
                 _ => 4
             };
 
-            // Find the ThemePicker and update it
-            var themePicker = this.FindControl<ComboBox>("ThemePicker");
-            if (themePicker != null)
-            {
-                themePicker.SelectedIndex = themeIndex;
-            }
+            // Apply theme directly
+            ApplyThemeByIndex(themeIndex);
         }
     }
 
@@ -1030,6 +1038,36 @@ public partial class MainWindow : Window
             }
             
             BuildUI();
+        }
+    }
+
+    private void OnTextSizeChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox combo)
+        {
+            fontScale = combo.SelectedIndex switch
+            {
+                0 => 0.9,
+                1 => 1.0,
+                2 => 1.1,
+                3 => 1.25,
+                _ => 1.0
+            };
+
+            // Defer UI rebuild to the dispatcher to avoid running during XAML initialization
+            Dispatcher.UIThread.Post(() =>
+            {
+                try
+                {
+                    BuildUI();
+                    ShowStatusMessage($"✓ Text size updated ({combo.SelectedIndex})");
+                }
+                catch (Exception ex)
+                {
+                    var log = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestStartup.log");
+                    try { System.IO.File.AppendAllText(log, "OnTextSizeChanged deferred BuildUI exception: " + ex + System.Environment.NewLine); } catch {}
+                }
+            });
         }
     }
 
