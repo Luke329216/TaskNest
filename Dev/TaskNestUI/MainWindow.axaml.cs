@@ -52,10 +52,10 @@ public partial class MainWindow : Window
             if (themePicker != null)
             {
                 themePicker.SelectionChanged += ThemePicker_SelectionChanged;
-                // Apply the currently selected theme immediately
+                // Defer applying the currently selected theme until after initialization completes
                 if (themePicker.SelectedIndex >= 0)
                 {
-                    ThemePicker_SelectionChanged(themePicker, null);
+                    Dispatcher.UIThread.Post(() => ThemePicker_SelectionChanged(themePicker, null));
                 }
             }
 
@@ -81,7 +81,9 @@ public partial class MainWindow : Window
             var bgSelector = this.FindControl<ComboBox>("BackgroundColorSelector");
             if (bgSelector != null && bgSelector.SelectedIndex >= 0)
             {
-                ApplyThemeByIndex(bgSelector.SelectedIndex);
+                // Defer initial background theme application to avoid running during XAML population
+                var idx = bgSelector.SelectedIndex;
+                Dispatcher.UIThread.Post(() => ApplyThemeByIndex(idx));
             }
 
             // Wire Settings button clicks programmatically
@@ -884,7 +886,21 @@ public partial class MainWindow : Window
     {
         if (sender is not ComboBox combo)
             return;
-        ApplyThemeByIndex(combo.SelectedIndex);
+
+        try
+        {
+            ApplyThemeByIndex(combo.SelectedIndex);
+        }
+        catch (Exception ex)
+        {
+            var log = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestStartup.log");
+            try { System.IO.File.AppendAllText(log, "ThemePicker_SelectionChanged exception: " + ex + System.Environment.NewLine); } catch {}
+            // Retry on UI thread later in case name scopes are not yet available
+            Dispatcher.UIThread.Post(() =>
+            {
+                try { ApplyThemeByIndex(combo.SelectedIndex); } catch { }
+            });
+        }
     }
 
     private void ApplyThemeByIndex(int index)
