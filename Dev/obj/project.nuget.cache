@@ -35,5 +35,15 @@
     "C:\\Users\\GJLEO\\.nuget\\packages\\skiasharp.nativeassets.win32\\3.119.4\\skiasharp.nativeassets.win32.3.119.4.nupkg.sha512",
     "C:\\Users\\GJLEO\\.nuget\\packages\\tmds.dbus.protocol\\0.92.0\\tmds.dbus.protocol.0.92.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "message": "Problem reading the cache file C:\\Work\\Respitory\\TaskNest\\Dev\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
+      "projectPath": "C:\\Work\\Respitory\\TaskNest\\Dev\\TaskNest.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Work\\Respitory\\TaskNest\\Dev\\TaskNest.csproj",
+      "targetGraphs": []
+    }
+  ]
 }

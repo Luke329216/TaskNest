@@ -424,6 +424,10 @@
             "AvaloniaUI.DiagnosticsSupport": {
               "target": "Package",
               "version": "[2.2.3, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[7.0.2, )"
             }
           },
           "imports": [

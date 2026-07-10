@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Work\\Respitory\\TaskNest\\dev\\TaskNestUI\\TaskNestUI.csproj": {}
+    "C:\\Work\\Respitory\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj": {}
   },
   "projects": {
-    "C:\\Work\\Respitory\\TaskNest\\dev\\TaskNestUI\\TaskNestUI.csproj": {
+    "C:\\Work\\Respitory\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Work\\Respitory\\TaskNest\\dev\\TaskNestUI\\TaskNestUI.csproj",
+        "projectUniqueName": "C:\\Work\\Respitory\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
         "projectName": "TaskNestUI",
-        "projectPath": "C:\\Work\\Respitory\\TaskNest\\dev\\TaskNestUI\\TaskNestUI.csproj",
+        "projectPath": "C:\\Work\\Respitory\\TaskNest\\Dev\\TaskNestUI\\TaskNestUI.csproj",
         "packagesPath": "C:\\Users\\GJLEO\\.nuget\\packages\\",
-        "outputPath": "C:\\Work\\Respitory\\TaskNest\\dev\\TaskNestUI\\obj\\",
+        "outputPath": "C:\\Work\\Respitory\\TaskNest\\Dev\\TaskNestUI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\GJLEO\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -66,6 +66,10 @@
             "AvaloniaUI.DiagnosticsSupport": {
               "target": "Package",
               "version": "[2.2.3, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[7.0.2, )"
             }
           },
           "imports": [
