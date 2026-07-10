@@ -56,15 +56,5 @@
     "C:\\Users\\GJLEO\\.nuget\\packages\\system.security.cryptography.protecteddata\\9.0.13\\system.security.cryptography.protecteddata.9.0.13.nupkg.sha512",
     "C:\\Users\\GJLEO\\.nuget\\packages\\tmds.dbus.protocol\\0.92.0\\tmds.dbus.protocol.0.92.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "message": "Problem reading the cache file C:\\Work\\Respitory\\TaskNest\\dev\\TaskNestUI\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
-      "projectPath": "C:\\Work\\Respitory\\TaskNest\\dev\\TaskNestUI\\TaskNestUI.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Work\\Respitory\\TaskNest\\dev\\TaskNestUI\\TaskNestUI.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

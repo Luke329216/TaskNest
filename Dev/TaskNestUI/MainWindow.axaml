@@ -161,7 +161,7 @@
                                         <StackPanel Spacing="6">
                                             <TextBlock Text="4. Track progress" 
                                                        FontSize="13" 
-                                                       Foreground="{DynamicResource PrimaryText}"/>
+                                                       Foreground="{DynamicResource SubtleText}"/>
                                             <TextBlock Text="Stay focused and maintain productivity" 
                                                        FontSize="12" 
                                                        Foreground="{DynamicResource SubtleText}"/>
@@ -420,9 +420,15 @@
                                      TextWrapping="Wrap"
                                      FontSize="16"
                                      MinHeight="600"
-                                     Watermark="Type your notes here..."
-                                     Background="#1E1E1E"
-                                     Foreground="#FFFFFF"/>
+                                     PlaceholderText="Type your notes here..."
+                                     Background="#1E1E1E">
+                                <TextBox.Styles>
+                                    <Style Selector="TextBox">
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="CaretBrush" Value="White"/>
+                                    </Style>
+                                </TextBox.Styles>
+                            </TextBox>
                         </Border>
 
                     </StackPanel>
