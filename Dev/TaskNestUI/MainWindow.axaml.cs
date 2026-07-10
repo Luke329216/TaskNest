@@ -15,19 +15,6 @@ using System.Timers;
 using Avalonia.Threading;
 using Microsoft.Data.SqlClient;
 
-string connectionString =
-    @"Server=localhost;
-      Database=Tododb;
-      Trusted_Connection=True;
-      TrustServerCertificate=True;";
-
-using SqlConnection connection =
-    new SqlConnection(connectionString);
-
-connection.Open();
-
-Console.WriteLine("Connected!");
-
 namespace TaskNestUI;
 
 public partial class MainWindow : Window
@@ -144,6 +131,29 @@ public partial class MainWindow : Window
             catch {}
 
             throw;
+        }
+    }
+
+    private void TestDatabaseConnection()
+    {
+        try
+        {
+            string connectionString =
+                @"Server=localhost;
+                Database=Tododb;
+                Trusted_Connection=True;
+                TrustServerCertificate=True;";
+
+            using SqlConnection connection =
+                new SqlConnection(connectionString);
+
+            connection.Open();
+
+            ShowStatusMessage("✅ Database Connected!");
+        }
+        catch (Exception ex)
+        {
+            ShowStatusMessage($"❌ Database Error: {ex.Message}");
         }
     }
 
@@ -1151,6 +1161,7 @@ public partial class MainWindow : Window
     {
         try
         {
+            TestDatabaseConnection();
             ShowStatusMessage("✅ TEST BUTTON WORKS! Click event fired!");
             string logPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestDebug.log");
             File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] *** TEST BUTTON CLICKED ***\n");
