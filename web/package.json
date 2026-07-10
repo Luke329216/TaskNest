@@ -1,0 +1,12 @@
+{
+  "name": "tasknest-web",
+  "version": "0.1.0",
+  "description": "Lightweight web port of TaskNest (no external deps)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

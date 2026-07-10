@@ -1,0 +1,16 @@
+:root{
+  --bg:#0b1220; --card:#0f172a; --text:#e6eef8; --sub:#9fb0c8; --accent:#3B82F6; --scale:1;
+}
+html,body{height:100%;margin:0;font-family:Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);font-size:calc(16px * var(--scale));}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.controls select{margin-left:8px;padding:6px}
+main{padding:18px;max-width:900px;margin:0 auto}
+.new{display:flex;gap:8px;margin-bottom:12px}
+input{padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);}
+button{background:var(--accent);color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+.card{background:var(--card);padding:12px;border-radius:12px;margin-bottom:10px}
+.row{display:flex;justify-content:space-between;align-items:center}
+.meta{color:var(--sub);font-size:0.9em}
+
+/* light theme */
+.light{ --bg:#ffffff; --card:#f4f6f8; --text:#0b1220; --sub:#586976 }

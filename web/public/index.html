@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TaskNest (Web)</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>TaskNest</h1>
+      <div class="controls">
+        <select id="themeSelect">
+          <option value="light">Light</option>
+          <option value="dark" selected>Dark</option>
+        </select>
+        <select id="sizeSelect">
+          <option value="0.9">Small</option>
+          <option value="1" selected>Normal</option>
+          <option value="1.1">Large</option>
+          <option value="1.25">XL</option>
+        </select>
+      </div>
+    </header>
+
+    <main>
+      <section class="new">
+        <input id="taskInput" placeholder="New task title" />
+        <input id="categoryInput" placeholder="Category (General)" />
+        <button id="addBtn">Add</button>
+      </section>
+
+      <section id="tasks"></section>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
