@@ -13,6 +13,20 @@ using Avalonia.Controls.Platform;
 using System.IO;
 using System.Timers;
 using Avalonia.Threading;
+using Microsoft.Data.SqlClient;
+
+string connectionString =
+    @"Server=localhost;
+      Database=Tododb;
+      Trusted_Connection=True;
+      TrustServerCertificate=True;";
+
+using SqlConnection connection =
+    new SqlConnection(connectionString);
+
+connection.Open();
+
+Console.WriteLine("Connected!");
 
 namespace TaskNestUI;
 
