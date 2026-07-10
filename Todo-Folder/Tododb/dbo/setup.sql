@@ -81,4 +81,27 @@ BEGIN
     , [taskId] INT NOT NULL
     , FOREIGN KEY (taskId) REFERENCES [dbo].[tasks]([Id])
   )
-END 
+END
+create table [dbo].[themes]
+(
+  [Id] INT NOT NULL PRIMARY KEY
+  , [theme] NVARCHAR(255) NOT NULL
+  , [taskId] INT NOT NULL
+  , FOREIGN KEY (taskId) REFERENCES [dbo].[tasks]([Id])
+)
+
+create table [dbo].[accent colors]
+(
+  [Id] INT NOT NULL PRIMARY KEY
+  , [accentColor] NVARCHAR(255) NOT NULL
+  , [taskId] INT NOT NULL
+  , FOREIGN KEY (taskId) REFERENCES [dbo].[tasks]([Id])
+)
+
+create table [dbo].[text sizes] 
+(id INT NOT NULL PRIMARY KEY
+  , [textSize] NVARCHAR(255) NOT NULL
+  , [taskId] INT NOT NULL
+  , FOREIGN KEY (taskId) REFERENCES [dbo].[tasks]([Id])
+ 
+)
