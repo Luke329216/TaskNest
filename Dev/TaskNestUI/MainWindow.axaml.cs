@@ -1161,7 +1161,6 @@ public partial class MainWindow : Window
     {
         try
         {
-            TestDatabaseConnection();
             ShowStatusMessage("✅ TEST BUTTON WORKS! Click event fired!");
             string logPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TaskNestDebug.log");
             File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] *** TEST BUTTON CLICKED ***\n");
