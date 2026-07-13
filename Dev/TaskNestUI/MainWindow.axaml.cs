@@ -12,6 +12,7 @@ using System.Linq;
 using Avalonia.Controls.Platform;
 using System.IO;
 using System.Timers;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using Microsoft.Data.SqlClient;
 
@@ -22,6 +23,8 @@ public partial class MainWindow : Window
     private ObservableCollection<TodoCategory> categories = new();
     private Stack<(TodoTask Task, TodoCategory Category, int Index)> deletedTasks = new();
     private HashSet<TodoCategory> expandedCategories = new();
+    private DatabaseService? _dbService = null;
+    private bool _isLoadingFromDb = false;
 
     private string inlineAction = "";
     private TodoCategory? inlineCategory = null;
@@ -34,6 +37,10 @@ public partial class MainWindow : Window
         try
         {
             InitializeComponent();
+
+            // Initialize database service
+            _dbService = new DatabaseService();
+            LoadTasksFromDatabaseAsync();
 
             var taskInput = this.FindControl<TextBox>("TaskInput");
 
@@ -185,8 +192,12 @@ public partial class MainWindow : Window
 
         if (string.IsNullOrWhiteSpace(input?.Text)) return;
 
-        categories.First(c => c.Name == "General")
-                  .Tasks.Add(new TodoTask { Text = input.Text.Trim() });
+        string taskText = input.Text.Trim();
+        var generalCategory = categories.First(c => c.Name == "General");
+        generalCategory.Tasks.Add(new TodoTask { Text = taskText });
+
+        // Save to database
+        _ = SaveTaskAdditionAsync(taskText, "General");
 
         input.Text = "";
         BuildUI();
@@ -688,7 +699,11 @@ public partial class MainWindow : Window
         }
         else
         {
-            category.Tasks.Add(new TodoTask { Text = text });
+            var newTask = new TodoTask { Text = text };
+            category.Tasks.Add(newTask);
+
+            // Save to database
+            _ = SaveTaskAdditionAsync(text, category.Name);
         }
 
         inlineAction = "";
@@ -731,6 +746,10 @@ public partial class MainWindow : Window
         {
             category.Tasks.Remove(task);
             category.CompletedTasks.Add(task);
+            
+            // Save completion to database
+            _ = SaveTaskCompletionAsync(task, category.Name, true);
+            
             BuildUI();
         };
 
@@ -854,6 +873,10 @@ public partial class MainWindow : Window
         {
             category.CompletedTasks.Remove(task);
             category.Tasks.Add(task);
+            
+            // Save incomplete status to database
+            _ = SaveTaskCompletionAsync(task, category.Name, false);
+            
             BuildUI();
         };
 
@@ -1302,6 +1325,118 @@ public partial class MainWindow : Window
         deletedTasks.Push((task, category, index));
         category.Tasks.Remove(task);
 
+        // Save deletion to database
+        _ = SaveTaskDeletionAsync(task, category);
+
         BuildUI();
+    }
+
+    private async void LoadTasksFromDatabaseAsync()
+    {
+        try
+        {
+            if (_dbService == null) return;
+
+            _isLoadingFromDb = true;
+            bool connected = await _dbService.TestConnectionAsync();
+            
+            if (!connected)
+            {
+                ShowStatusMessage("⚠️ Database connection failed. Using local data.");
+                _isLoadingFromDb = false;
+                return;
+            }
+
+            var dbCategories = await _dbService.LoadTasksAsync();
+            
+            if (dbCategories.Count > 0)
+            {
+                categories.Clear();
+                foreach (var cat in dbCategories)
+                {
+                    categories.Add(cat);
+                }
+                ShowStatusMessage("✅ Tasks loaded from database");
+            }
+            else
+            {
+                // Add default General category
+                categories.Add(new TodoCategory { Name = "General", Icon = "📁" });
+            }
+
+            _isLoadingFromDb = false;
+            BuildUI();
+        }
+        catch (Exception ex)
+        {
+            ShowStatusMessage($"⚠️ Database error: {ex.Message}");
+            _isLoadingFromDb = false;
+        }
+    }
+
+    private async Task SaveTaskAdditionAsync(string taskText, string categoryName)
+    {
+        if (_dbService == null || _isLoadingFromDb) return;
+
+        try
+        {
+            await _dbService.SaveTaskAsync(taskText, categoryName);
+        }
+        catch (Exception ex)
+        {
+            ShowStatusMessage($"⚠️ Failed to save task: {ex.Message}");
+        }
+    }
+
+    private async Task SaveTaskCompletionAsync(TodoTask task, string categoryName, bool isCompleted)
+    {
+        if (_dbService == null || _isLoadingFromDb) return;
+
+        try
+        {
+            await _dbService.UpdateTaskCompletionAsync(task.Text, isCompleted, categoryName);
+        }
+        catch (Exception ex)
+        {
+            ShowStatusMessage($"⚠️ Failed to save completion: {ex.Message}");
+        }
+    }
+
+    private async Task SaveTaskDeletionAsync(TodoTask task, TodoCategory category)
+    {
+        if (_dbService == null || _isLoadingFromDb) return;
+
+        try
+        {
+            await _dbService.DeleteTaskAsync(task.Text, category.Name);
+        }
+        catch (Exception ex)
+        {
+            ShowStatusMessage($"⚠️ Failed to delete task: {ex.Message}");
+        }
+    }
+
+    private void ShowStatusMessage(string message)
+    {
+        try
+        {
+            var statusBlock = this.FindControl<TextBlock>("StatusMessage");
+            if (statusBlock != null)
+            {
+                statusBlock.Text = message;
+                // Auto-clear after 3 seconds
+                var timer = new Timer(3000);
+                timer.Elapsed += (_, _) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        if (statusBlock.Text == message)
+                            statusBlock.Text = "";
+                    });
+                };
+                timer.Start();
+            }
+        }
+        catch { }
     }
 }
